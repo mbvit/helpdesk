@@ -34,7 +34,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/dockerfiles/rails.Dockerfile
-    image: chatwoot-dev
+    image: charlesmbv/helpdesk-mbvit
     ports:
       - "3000:3000"
     env_file:
