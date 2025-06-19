@@ -121,7 +121,6 @@ export default {
       threshold: this.thresholdTime,
       time: this.time,
     };
-    return
   },
   onThresholdUnitChange() {
       if (this.thresholdTime === null || this.thresholdTime === 0) return null;
@@ -132,7 +131,6 @@ export default {
       threshold_unit: this.thresholdUnit,
       time: this.time,
     };
-    return
   },
   },
 };
