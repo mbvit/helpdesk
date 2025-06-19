@@ -62,6 +62,30 @@ class ActionService
     @conversation.update!(team_id: team_ids[0])
   end
 
+  def ticket_escalation(escalate_step)
+    team_id = escalate_step[0]
+    delay_in_seconds = escalate_step[1]
+
+    return if team_id.blank? || %w[nil 0].include?(team_id.to_s)
+
+    total_previous_delay = @conversation.conversation_escalations.sum(:delay_in_seconds)
+
+    cumulative_delay = total_previous_delay
+
+    scheduled_time = @conversation.created_at + cumulative_delay.seconds
+
+    # Save escalation step
+    escalation = @conversation.conversation_escalations.create!(
+      team_id: team_id,
+      delay_in_seconds: delay_in_seconds.to_i, # Only current step's delay
+      status: 'pending',
+      scheduled_at: scheduled_time
+    )
+
+    # Schedule the job using cumulative delay (wait from now)
+    ::Conversations::EscalationJob.set(wait: cumulative_delay.seconds).perform_later(escalation.id)
+  end
+
   def remove_assigned_team(_params)
     @conversation.update!(team_id: nil)
   end
