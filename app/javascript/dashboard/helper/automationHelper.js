@@ -112,6 +112,7 @@ export const getActionOptions = ({
     remove_label: generateConditionOptions(labels, 'title'),
     change_priority: PRIORITY_CONDITION_VALUES,
     add_sla: slaPolicies,
+    ticket_escalation: addNoneToListFn ? addNoneToListFn(teams) : teams,
   };
   return actionsMap[type];
 };

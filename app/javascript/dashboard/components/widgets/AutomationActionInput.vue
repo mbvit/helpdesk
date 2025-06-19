@@ -5,6 +5,13 @@ import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vu
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
 export default {
+  data() {
+    return {
+    thresholdTime: null,
+    thresholdUnit: 'Minutes',
+    time: 0,
+  };
+},
   components: {
     AutomationActionTeamMessageInput,
     AutomationActionFileInput,
@@ -87,13 +94,46 @@ export default {
       },
     },
   },
+  watch: {
+  action_params: {
+    immediate: true,
+    handler(val) {
+      if (this.modelValue?.action_name === 'ticket_escalation') {
+        this.thresholdTime = val?.threshold || null;
+        this.thresholdUnit = val?.threshold_unit || 'Minutes';
+      }
+    },
+  },
+},
   methods: {
-    removeAction() {
-      this.$emit('removeAction');
-    },
-    resetAction() {
-      this.$emit('resetAction');
-    },
+  removeAction() {
+    this.$emit('removeAction');
+  },
+  resetAction() {
+    this.$emit('resetAction');
+  },
+  onThresholdTimeChange() {
+    if (this.thresholdTime === null || this.thresholdTime === 0) return null;
+      const unitsToSeconds = { Minutes: 60, Hours: 3600, Days: 86400 };
+      this.time = Number(this.thresholdTime * (unitsToSeconds[this.thresholdUnit] || 1));
+    this.action_params = {
+      ...this.action_params,
+      threshold: this.thresholdTime,
+      time: this.time,
+    };
+    return
+  },
+  onThresholdUnitChange() {
+      if (this.thresholdTime === null || this.thresholdTime === 0) return null;
+      const unitsToSeconds = { Minutes: 60, Hours: 3600, Days: 86400 };
+      this.time = Number(this.thresholdTime * (unitsToSeconds[this.thresholdUnit] || 1));
+    this.action_params = {
+      ...this.action_params,
+      threshold_unit: this.thresholdUnit,
+      time: this.time,
+    };
+    return
+  },
   },
 };
 </script>
@@ -104,7 +144,7 @@ export default {
       <select
         v-model="action_name"
         class="action__question"
-        :class="{ 'full-width': !showActionInput }"
+        :class="{ 'full-width': !showActionInput ,'flex-[0.8]':modelValue.action_name === 'ticket_escalation' }"
         @change="resetAction()"
       >
         <option
@@ -115,11 +155,11 @@ export default {
           {{ attribute.label }}
         </option>
       </select>
-      <div v-if="showActionInput" class="filter__answer--wrap">
+      <div v-if="showActionInput" class="filter__answer--wrap flex-1">
         <div v-if="inputType" class="w-full">
           <div
             v-if="inputType === 'search_select'"
-            class="multiselect-wrap--small"
+            :class="modelValue.action_name === 'ticket_escalation' ? 'board_pipeline_select_wrap multiselect-wrap--small' : 'multiselect-wrap--small'"
           >
             <multiselect
               v-model="action_params"
@@ -127,13 +167,37 @@ export default {
               label="name"
               :placeholder="$t('FORMS.MULTISELECT.SELECT')"
               selected-label
-              :select-label="$t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
+              select-label="select"
               deselect-label=""
               :max-height="160"
               :options="dropdownValues"
               :allow-empty="false"
               :option-height="104"
             />
+            <div
+            v-if="modelValue.action_name === 'ticket_escalation'"
+            class="multiselect-wrap--small flex items-center gap-2 w-full ml-2"
+          >
+            <!-- Time Input -->
+            <input
+              type="number"
+              v-model="thresholdTime"
+              class="border border-gray-300 rounded-lg px-2 py-1 text-sm w-20 flex-1"
+              placeholder="Select Time"
+              @input="onThresholdTimeChange"
+            />
+
+            <!-- Unit Dropdown -->
+            <select
+              v-model="thresholdUnit"
+              class="border border-gray-300 rounded-lg px-2 py-1 text-sm w-24 flex-[0.5]"
+              @change="onThresholdUnitChange"
+            >
+              <option value="Minutes">Minutes</option>
+              <option value="Hours">Hours</option>
+              <option value="Days">Days</option>
+            </select>
+          </div>
           </div>
           <div
             v-else-if="inputType === 'multi_select'"
@@ -280,6 +344,14 @@ export default {
 }
 .action-message {
   @apply mt-2 mx-0 mb-0;
+}
+.board_pipeline_select_wrap{
+  display: flex;
+  flex-direction: row;
+ 
+  .multiselect__tags{
+    width: 200px;
+  }
 }
 // Prosemirror does not have a native way of hiding the menu bar, hence
 ::v-deep .ProseMirror-menubar {

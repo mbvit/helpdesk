@@ -18,9 +18,14 @@ const formatArray = params => {
 };
 
 const generatePayloadForObject = item => {
-  if (item.action_params.id) {
+  if (item.action_name === 'ticket_escalation') {
+    item.action_params = [ 
+      item.action_params.id,
+      item.action_params.time
+    ]
+  } else if (item.action_params.id) {
     item.action_params = [item.action_params.id];
-  } else {
+  }  else {
     item.action_params = [item.action_params];
   }
   return item.action_params;
