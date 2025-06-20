@@ -282,6 +282,13 @@ Rails.application.routes.draw do
           resources :upload, only: [:create]
         end
       end
+
+      resources :conversation_escalations, only: [] do
+        member do
+          post :pause
+          post :resume
+        end
+      end
       # end of account scoped api routes
       # ----------------------------------
 

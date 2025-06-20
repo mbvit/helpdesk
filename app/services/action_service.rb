@@ -63,6 +63,8 @@ class ActionService
   end
 
   def ticket_escalation(escalate_step)
+    @conversation.update!(escalation_enabled: true) unless @conversation.escalation_enabled
+
     team_id = escalate_step[0]
     delay_in_seconds = escalate_step[1]
 
