@@ -26,6 +26,7 @@ class Conversations::EscalationService
         status: 'paused'
       )
     end
+    @conversation.update!(escalation_status: 'paused') if @conversation.escalation_status == 'running'
   end
 
   def resume_escalation_chain(escalation)
@@ -63,5 +64,6 @@ class Conversations::EscalationService
       # Add this escalation's original delay to cumulative_delay
       cumulative_delay += future_escalation.delay_in_seconds
     end
+    @conversation.update!(escalation_status: 'running') if @conversation.escalation_status == 'paused'
   end
 end

@@ -141,6 +141,16 @@ class ConversationApi extends ApiClient {
   delete(conversationId) {
     return axios.delete(`${this.url}/${conversationId}`);
   }
+  pauseEscalation(conversationId){
+    console.log("My COnversation ID", conversationId,this.url);
+    const escalationUrl = this.url.replace('conversations', 'conversation_escalations');
+    return axios.post(`${escalationUrl}/${conversationId}/pause`);
+  }
+  resumeEscalation(conversationId){
+    console.log("My COnversation ID", conversationId,this.url);
+    const escalationUrl = this.url.replace('conversations', 'conversation_escalations');
+    return axios.post(`${escalationUrl}/${conversationId}/resume`);
+  }
 }
 
 export default new ConversationApi();

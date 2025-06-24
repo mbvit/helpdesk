@@ -12,6 +12,15 @@ class Conversations::EscalationJob < ApplicationJob
     conversation.update!(team_id: escalation.team_id)
 
     # Mark escalation as completed
-    escalation.update!(status: 'completed')
+    escalation.update!(status: 'completed') 
+    # Check if this was the last escalation
+
+    pending_or_paused_count = conversation.conversation_escalations.where(status: ['pending', 'paused']).count
+ 
+    if pending_or_paused_count.zero?
+
+      conversation.update!(escalation_status: 'completed')
+    end
+ 
   end
 end

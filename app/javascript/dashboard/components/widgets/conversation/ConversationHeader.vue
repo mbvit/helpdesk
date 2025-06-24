@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import { useElementSize } from '@vueuse/core';
@@ -13,6 +13,8 @@ import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { snoozedReopenTime } from 'dashboard/helper/snoozeHelpers';
 import { useInbox } from 'dashboard/composables/useInbox';
 import { useI18n } from 'vue-i18n';
+import Button from 'dashboard/components-next/button/Button.vue';
+import EscalationPopoverCard from './EscalationPopoverCard.vue';
 
 const props = defineProps({
   chat: {
@@ -84,6 +86,66 @@ const hasMultipleInboxes = computed(
 );
 
 const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
+const hasEscalation = computed(() => {
+  return props.chat?.escalation_status && props.chat?.escalation_status !== 'no_escalation' &&  props.chat?.escalation_status !== 'completed';
+});
+const escalationButtonLabel = computed(() => {
+  if (props.chat?.escalation_status === 'running') return t('Pause');
+  if (props.chat?.escalation_status === 'paused') return t('Resume');
+  return '';
+});
+
+const pauseOrResumeEscalation = async () => {
+  try {
+    const status = props.chat?.escalation_status;
+    console.log("status" , status)
+    let action = '';
+
+    if (status === 'running') action = 'pause';
+    else if (status === 'paused') action = 'resume';
+    else return;
+
+    console.log(`Attempting to ${action} escalation for conversation:`, currentChat.value?.id);
+
+    const data = await store.dispatch('PauseResumeEscalation', {
+      conversationId: currentChat.value?.id,
+      action,
+    });
+
+    console.log("Escalation API Response:", data);
+  } catch (error) {
+    console.error('Error pausing/resuming escalation:', error);
+  }
+};
+
+const escalationChain = computed(() => {
+  const escalations = props.chat?.escalations || [];
+
+  if (escalations.length === 0) return '';
+
+  // Sort by scheduled_at ascending (just in case)
+  const sorted = [...escalations].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+
+  const completed = sorted.filter(e => e.status === 'completed');
+  const active = sorted.find(e => e.status !== 'completed');
+
+  const lastCompleted = completed.at(-1); 
+  const result = [];
+
+  if (lastCompleted) result.push(lastCompleted.team_name);
+  if (active) result.push(active.team_name);
+
+  return result.join(' >> ');
+});
+// watch(
+//   () => hasEscalation.value,
+//   (newVal) => {
+//     if (newVal) {
+//       pauseOrResumeEscalation();
+//     }
+//   },
+//   { immediate: true } // Optional: calls on initial load too
+// );
 </script>
 
 <template>
@@ -124,6 +186,7 @@ const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
           />
         </div>
 
+
         <div
           class="flex items-center gap-2 overflow-hidden text-xs conversation--header--actions text-ellipsis whitespace-nowrap"
         >
@@ -144,7 +207,34 @@ const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
         :parent-width="width"
         class="hidden md:flex"
       />
-      <MoreActions :conversation-id="currentChat.id" />
+  <div class="relative group">
+    <div
+      v-if="escalationChain"
+      class="flex items-center min-w-fit h-[26px] rounded-lg bg-n-alpha-1 text-xs font-medium px-2 text-n-slate-11"
+    >
+      <!-- <fluent-icon
+        icon="i-lucide-alert-triangle"
+        size="12"
+        type="outline"
+        icon-lib="lucide"
+        class="flex-shrink-0 mr-1 text-n-slate-11"
+      /> -->
+      {{ escalationChain }}
     </div>
+
+    <div class="absolute top-7 left-0 hidden group-hover:flex">
+      <EscalationPopoverCard :escalations="props.chat.escalations" />
+    </div>
+</div>
+      <Button
+        v-if="hasEscalation"
+        :label="escalationButtonLabel"
+        size="sm"
+        color="slate"
+        class="ltr:rounded-r-none rtl:rounded-l-none !outline-1"
+        @click="pauseOrResumeEscalation"
+      />
+      <MoreActions :conversation-id="currentChat.id" />
+  </div>
   </div>
 </template>

@@ -132,6 +132,13 @@ Rails.application.routes.draw do
             end
           end
 
+          resources :conversation_escalations, only: [] do
+            member do
+              post :pause
+              post :resume
+            end
+          end
+          
           resources :search, only: [:index] do
             collection do
               get :conversations
@@ -283,12 +290,12 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :conversation_escalations, only: [] do
-        member do
-          post :pause
-          post :resume
-        end
-      end
+      # resources :conversation_escalations, only: [] do
+      #   member do
+      #     post :pause
+      #     post :resume
+      #   end
+      # end
       # end of account scoped api routes
       # ----------------------------------
 
