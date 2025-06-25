@@ -19,7 +19,7 @@ class Api::V1::Accounts::ConversationEscalationsController < ApplicationControll
     escalation = @conversation.conversation_escalations.find_by(status: 'paused')
  
     unless escalation
-      return render json: { message: 'No paused escalation to resume' }, status: :unprocessable_entity
+      return render json: { message: 'No paused escalation to resume' , data: @conversation }, status: :unprocessable_entity
     end
  
     service = Conversations::EscalationService.new(@conversation)

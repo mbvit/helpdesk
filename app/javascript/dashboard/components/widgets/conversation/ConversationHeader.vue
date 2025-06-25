@@ -207,20 +207,13 @@ const escalationChain = computed(() => {
         :parent-width="width"
         class="hidden md:flex"
       />
-  <div class="relative group">
-    <div
-      v-if="escalationChain"
-      class="flex items-center min-w-fit h-[26px] rounded-lg bg-n-alpha-1 text-xs font-medium px-2 text-n-slate-11"
-    >
-      <!-- <fluent-icon
-        icon="i-lucide-alert-triangle"
-        size="12"
-        type="outline"
-        icon-lib="lucide"
-        class="flex-shrink-0 mr-1 text-n-slate-11"
-      /> -->
-      {{ escalationChain }}
-    </div>
+      <div class="relative group">
+        <div
+          v-if="escalationChain"
+          class="flex items-center min-w-fit h-[26px] rounded-lg bg-n-alpha-1 text-xs font-medium px-2 text-n-slate-11"
+        >
+          {{ escalationChain }}
+        </div>
 
     <div class="absolute top-7 left-0 hidden group-hover:flex">
       <EscalationPopoverCard :escalations="props.chat.escalations" />
