@@ -115,7 +115,7 @@ export default {
     castMessageVmodel: {
       get() {
         if (Array.isArray(this.action_params)) {
-          return this.action_params[this.inde];
+          return this.action_params[0];
         }
         return this.action_params;
       },
