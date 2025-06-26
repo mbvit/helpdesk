@@ -38,7 +38,7 @@ const currentChat = computed(() => store.getters.getSelectedChat);
 const accountId = computed(() => store.getters.getCurrentAccountId);
 
 const chatMetadata = computed(() => props.chat.meta);
-
+const isLoading = ref(false);
 const backButtonUrl = computed(() => {
   const {
     params: { inbox_id: inboxId, label, teamId },
@@ -106,7 +106,7 @@ const pauseOrResumeEscalation = async () => {
     else return;
 
     console.log(`Attempting to ${action} escalation for conversation:`, currentChat.value?.id);
-
+    isLoading.value = true;
     const data = await store.dispatch('PauseResumeEscalation', {
       conversationId: currentChat.value?.id,
       action,
@@ -115,6 +115,8 @@ const pauseOrResumeEscalation = async () => {
     console.log("Escalation API Response:", data);
   } catch (error) {
     console.error('Error pausing/resuming escalation:', error);
+  } finally {
+    isLoading.value = false; // Reset loading state
   }
 };
 
@@ -218,16 +220,19 @@ const escalationChain = computed(() => {
     <div class="absolute top-7 left-0 hidden group-hover:flex">
       <EscalationPopoverCard :escalations="props.chat.escalations" />
     </div>
-</div>
-      <Button
+    </div>
+        <Button
         v-if="hasEscalation"
-        :label="escalationButtonLabel"
+        :label="isLoading ? '' : escalationButtonLabel"
         size="sm"
         color="slate"
-        class="ltr:rounded-r-none rtl:rounded-l-none !outline-1"
+        class="ltr:rounded-r-none rtl:rounded-l-none !outline-1 flex items-center justify-center"
         @click="pauseOrResumeEscalation"
-      />
-      <MoreActions :conversation-id="currentChat.id" />
-  </div>
+      >
+        <span v-if="isLoading" class="spinner"></span> <!-- Show spinner -->
+        <span v-else>{{ escalationButtonLabel }}</span> <!-- Show label when not loading -->
+      </Button>
+          <MoreActions :conversation-id="currentChat.id" />
+      </div>
   </div>
 </template>

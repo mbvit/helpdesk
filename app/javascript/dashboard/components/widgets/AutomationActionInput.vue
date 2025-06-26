@@ -221,27 +221,7 @@ export default {
   resetAction() {
     this.$emit('resetAction');
   },
-  onThresholdTimeChange() {
-    if (this.thresholdTime === null || this.thresholdTime === 0) return null;
-      const unitsToSeconds = { Minutes: 60, Hours: 3600, Days: 86400 };
-      this.time = Number(this.thresholdTime * (unitsToSeconds[this.thresholdUnit] || 1));
-    this.action_params = {
-      ...this.action_params,
-      threshold: this.thresholdTime,
-      time: this.time,
-    };
-  },
-  onThresholdUnitChange() {
-      if (this.thresholdTime === null || this.thresholdTime === 0) return null;
-      const unitsToSeconds = { Minutes: 60, Hours: 3600, Days: 86400 };
-      this.time = Number(this.thresholdTime * (unitsToSeconds[this.thresholdUnit] || 1));
-    this.action_params = {
-      ...this.action_params,
-      threshold_unit: this.thresholdUnit,
-      time: this.time,
-    };
-  },
-  },
+},  
 };
 </script>
 
@@ -290,7 +270,7 @@ export default {
               type="number"
               v-model="thresholdTime"
               class="border border-gray-300 rounded-lg px-2 py-1 text-sm w-20 flex-1"
-              placeholder="Select Time"
+              placeholder="Time"
             />
 
             <!-- Unit Dropdown -->
