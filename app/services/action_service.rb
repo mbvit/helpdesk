@@ -66,7 +66,7 @@ class ActionService
     @conversation.update!(escalation_status: 'running') if @conversation.escalation_status == 'no_escalation'
 
     team_id = escalate_step[0]
-    delay_in_seconds = escalate_step[1]
+    delay_in_seconds = convert_to_seconds(escalate_step[1], escalate_step[2])
 
     return if team_id.blank? || %w[nil 0].include?(team_id.to_s)
 
@@ -120,5 +120,27 @@ class ActionService
     @conversation.additional_attributes['type'] == 'tweet'
   end
 end
+
+def convert_to_seconds(value, unit)
+  return 0 unless value.is_a?(Numeric) && value >= 0
+  return 0 unless unit.is_a?(String)
+
+  normalized_unit = unit.strip.downcase
+
+  case normalized_unit
+  when 'second', 'seconds'
+    value
+  when 'minute', 'minutes', 'min'
+    value * 60
+  when 'hour', 'hours', 'hr', 'hoours' # typo fallback
+    value * 3600
+  when 'day', 'days'
+    value * 86400
+  else
+    warn "Unknown time unit: #{unit}"
+    0
+  end
+end
+
 
 ActionService.include_mod_with('ActionService')

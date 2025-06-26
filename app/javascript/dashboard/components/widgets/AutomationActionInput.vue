@@ -47,6 +47,32 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedResponse: {
+      type: Object,
+      default: () => null,
+    },
+    index: {
+      type: Number,
+      default: 0,
+    },
+  },
+  mounted() {
+    if (this.modelValue?.action_name === 'ticket_escalation') {
+       const updatedPayload = { ...this.modelValue };
+
+      if (Array.isArray(updatedPayload.action_params)) {
+        // const thresholdTime = this.selectedResponse.actions[0].action_params[1];
+        // const thresholdUnit = this.selectedResponse.actions[0].action_params[2];
+
+        updatedPayload.action_params = updatedPayload.action_params.map((param, idx) => ({
+          ...param,
+          thresholdTime : this.selectedResponse.action_params[1],
+          thresholdUnit : this.selectedResponse.action_params[2],
+        }));
+      }
+
+      this.$emit('update:modelValue', updatedPayload);
+    }
   },
   emits: ['update:modelValue', 'input', 'removeAction', 'resetAction'],
   computed: {
@@ -68,8 +94,12 @@ export default {
       },
       set(value) {
         const payload = this.modelValue || {};
-        this.$emit('update:modelValue', { ...payload, action_params: value });
-        this.$emit('input', { ...payload, action_params: value });
+
+        value = {...value, thresholdTime: this.thresholdTime, thresholdUnit: payload.action_params[0]?.thresholdUnit || this.thresholdUnit};
+
+        
+        this.$emit('update:modelValue', { ...payload, action_params: {...payload.action_params, ...value} });
+        this.$emit('input', { ...payload, action_params: {...payload.action_params, ...value} });
       },
     },
     inputType() {
@@ -85,12 +115,91 @@ export default {
     castMessageVmodel: {
       get() {
         if (Array.isArray(this.action_params)) {
-          return this.action_params[0];
+          return this.action_params[this.inde];
         }
         return this.action_params;
       },
       set(value) {
         this.action_params = value;
+      },
+    },
+    thresholdTime: {
+      get() {
+        if (!this.modelValue) return null;
+        return this.modelValue.action_params?.thresholdTime || this.modelValue.action_params[0]?.thresholdTime  || null;
+      },
+      set(value) {
+        if (!this.modelValue) return;
+
+        const payload = this.modelValue || {};
+        const actionParams = payload.action_params;
+
+        let updatedActionParams;
+
+        if (Array.isArray(actionParams)) {
+          // Case: array of objects — update first object in array
+          updatedActionParams = [
+            {
+              ...actionParams[0],
+              thresholdTime: value,
+            },
+            // ...actionParams.slice(1),
+          ];
+        } else {
+          // Case: object — update directly
+          updatedActionParams = {
+            ...actionParams,
+            thresholdTime: value,
+          };
+        }
+
+        const updatedPayload = {
+          ...payload,
+          action_params: updatedActionParams,
+        };
+
+        this.$emit('update:modelValue', updatedPayload);
+        this.$emit('input', updatedPayload); // Vue 2 compatibility
+      },
+    },
+
+    thresholdUnit: {
+      get() {
+        if (!this.modelValue) return null;
+        return this.modelValue.action_params?.thresholdUnit || this.modelValue.action_params[0]?.thresholdUnit || null;
+      },
+      set(value) {
+        if (!this.modelValue) return;
+
+        const payload = this.modelValue || {};
+        const actionParams = payload.action_params;
+
+        let updatedActionParams;
+
+        if (Array.isArray(actionParams)) {
+          // Case: array of objects — update first object in array
+          updatedActionParams = [
+            {
+              ...actionParams[0],
+              thresholdUnit: value,
+            },
+            // ...actionParams.slice(1),
+          ];
+        } else {
+          // Case: object — update directly
+          updatedActionParams = {
+            ...actionParams,
+            thresholdUnit: value,
+          };
+        }
+
+        const updatedPayload = {
+          ...payload,
+          action_params: updatedActionParams,
+        };
+
+        this.$emit('update:modelValue', updatedPayload);
+        this.$emit('input', updatedPayload); // Vue 2 compatibility
       },
     },
   },
@@ -182,14 +291,12 @@ export default {
               v-model="thresholdTime"
               class="border border-gray-300 rounded-lg px-2 py-1 text-sm w-20 flex-1"
               placeholder="Select Time"
-              @input="onThresholdTimeChange"
             />
 
             <!-- Unit Dropdown -->
             <select
               v-model="thresholdUnit"
               class="border border-gray-300 rounded-lg px-2 py-1 text-sm w-24 flex-[0.5]"
-              @change="onThresholdUnitChange"
             >
               <option value="Minutes">Minutes</option>
               <option value="Hours">Hours</option>

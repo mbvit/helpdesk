@@ -10,7 +10,7 @@
 #  contact_last_seen_at   :datetime
 #  custom_attributes      :jsonb
 #  escalation_enabled     :boolean          default(FALSE)
-#  escalation_status      :string           default("none")
+#  escalation_status      :string           default("no_escalation")
 #  first_reply_created_at :datetime
 #  identifier             :string
 #  last_activity_at       :datetime         not null
@@ -30,6 +30,7 @@
 #  inbox_id               :integer          not null
 #  sla_policy_id          :bigint
 #  team_id                :bigint
+#  ticket_id              :string
 #
 # Indexes
 #
@@ -47,6 +48,7 @@
 #  index_conversations_on_status_and_account_id       (status,account_id)
 #  index_conversations_on_status_and_priority         (status,priority)
 #  index_conversations_on_team_id                     (team_id)
+#  index_conversations_on_ticket_id                   (ticket_id) UNIQUE
 #  index_conversations_on_uuid                        (uuid) UNIQUE
 #  index_conversations_on_waiting_since               (waiting_since)
 #
@@ -120,7 +122,7 @@ class Conversation < ApplicationRecord
 
   after_update_commit :execute_after_update_commit_callbacks
   after_create_commit :notify_conversation_creation
-  after_create_commit :load_attributes_created_by_db_triggers
+  after_create_commit :load_attributes_created_by_db_triggers, :assign_ticket_id
 
   delegate :auto_resolve_after, to: :account
 
@@ -301,6 +303,10 @@ class Conversation < ApplicationRecord
     return unless additional_attributes['referer']
 
     self['additional_attributes']['referer'] = nil unless url_valid?(additional_attributes['referer'])
+  end
+
+  def assign_ticket_id
+    update_column(:ticket_id, "TCK-#{id}")
   end
 
   # creating db triggers
