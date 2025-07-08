@@ -1,0 +1,78 @@
+# Docker compose file for running VegaVision from Local Image
+# Uses Networking, Volumes, Stack and Environment variables for a production-like environment.
+
+# CI/CD stages: 
+#   - Local Staging 
+#   - Deploying (push) tested image to Docker Hub
+
+# NOTE:
+# - Connect with external db
+# - Don't run local Image directly in production
+# - The stack operates on its own default re-named default netowork.
+# - Rails uses external network for DB connection via Host, and outside access
+
+version: '3.9'
+
+x-base: &base
+  image: vegavision:latest # Local image (production is charlesmbv/vegavision:latest)
+  env_file: .env
+  volumes:
+    - /vv-volumes/storage_data:/app/storage
+
+services:
+  Rails:
+    <<: *base
+    container_name: Rails
+    depends_on:
+      - Redis
+    ports:
+      - '127.0.0.1:3001:3000'
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - RAILS_SERVE_STATIC_FILES=true
+    entrypoint: docker/entrypoints/rails.sh
+    command: ['bundle', 'exec', 'rails', 's', '-p', '3000', '-b', '0.0.0.0']
+    restart: always
+    networks:
+      - default
+      - vv-helpdesk
+
+  Sidekiq:
+    <<: *base
+    container_name: Sidekiq
+    depends_on:
+      - Redis
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+    restart: always
+
+  Redis:
+    image: redis:alpine
+    container_name: Redis
+    restart: always
+    command: ["sh", "-c", "redis-server --requirepass \"$REDIS_PASSWORD\""]
+    env_file: .env
+    ports:
+      - '127.0.0.1:6377:6379'
+    volumes:
+      - /vv-volumes/redis_data:/data
+
+networks:
+  default:
+    name: vv-helpdesk-default
+    driver: bridge
+
+  # External network, connect DB/Proxies to this network
+  vv-helpdesk:
+    external: true
+
+# Volumes for Base & Redis service (client data, not necessary to be persistent)
+volumes:
+  storage_data:
+  redis_data:
+
