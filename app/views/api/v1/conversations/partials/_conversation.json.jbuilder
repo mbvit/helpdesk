@@ -54,6 +54,12 @@ json.priority conversation.priority
 json.waiting_since conversation.waiting_since.to_i.to_i
 json.sla_policy_id conversation.sla_policy_id
 json.escalation_status conversation.escalation_status
+json.merged_with_id conversation.merged_with_id
+json.cc_contacts conversation.cc_contacts do |contact|
+  json.id contact.id
+  json.name contact.name
+  json.email contact.email
+end
 json.escalations conversation.conversation_escalations do |escalation|
   json.id escalation.id
   json.delay_in_seconds escalation.delay_in_seconds

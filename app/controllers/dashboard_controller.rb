@@ -7,7 +7,7 @@ class DashboardController < ActionController::Base
   before_action :set_global_config
   before_action :set_dashboard_scripts
   before_action :set_current_account
-  before_action :set_account_name # Add this line
+  # before_action :set_account_name # Add this line
   around_action :switch_locale
   before_action :ensure_installation_onboarding, only: [:index]
   before_action :render_hc_if_custom_domain, only: [:index]
@@ -49,8 +49,8 @@ class DashboardController < ActionController::Base
   def set_current_account
     return unless current_user
   
-    # This is Chatwoot's way: set based on current user’s default or first account
     ::Current.account = current_user.accounts.first
+    set_account_name
   end
 
   def set_account_name

@@ -40,10 +40,11 @@ class ConversationApi extends ApiClient {
     });
   }
 
-  search({ q }) {
+  search({ q, contact_name }) {
     return axios.get(`${this.url}/search`, {
       params: {
         q,
+        contact_name,
         page: 1,
       },
     });
@@ -150,6 +151,12 @@ class ConversationApi extends ApiClient {
     console.log("My COnversation ID", conversationId,this.url);
     const escalationUrl = this.url.replace('conversations', 'conversation_escalations');
     return axios.post(`${escalationUrl}/${conversationId}/resume`);
+  }
+  merge(primaryConversationId, mergeIds) {
+    return axios.post(`${this.url}/merge`, {
+      primary_conversation_id: primaryConversationId,
+      merge_ids: mergeIds,
+    });
   }
 }
 

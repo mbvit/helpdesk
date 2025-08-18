@@ -67,6 +67,7 @@ class ConversationFinder
     filter_by_team
     filter_by_labels
     filter_by_query
+    filter_by_contact
     filter_by_source_id
   end
 
@@ -164,6 +165,14 @@ class ConversationFinder
 
     @conversations = @conversations.joins(:contact_inbox)
     @conversations = @conversations.where(contact_inboxes: { source_id: params[:source_id] })
+  end
+
+  def filter_by_contact
+    return unless params[:contact_name].present?
+
+    @conversations = @conversations.joins(:contact)
+                                 .where('contacts.name ILIKE ?', "%#{params[:contact_name]}%")
+                                 .where(merged_with_id: nil)
   end
 
   def set_count_for_all_conversations

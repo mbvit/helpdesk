@@ -398,6 +398,9 @@ export default {
       const { slug = '' } = portal;
       return slug;
     },
+    isMerged() {
+      return Boolean(this.currentChat?.merged_with_id);
+    },
   },
   watch: {
     currentChat(conversation, oldConversation) {
@@ -1050,10 +1053,12 @@ export default {
         inboxEmail,
         forwardToEmail
       );
+      const participantEmails = this.currentChat?.cc_contacts?.map(c => c.email) || [];
 
+      const combinedBcc = [...new Set([...bcc, ...participantEmails])];
       this.toEmails = to.join(', ');
       this.ccEmails = cc.join(', ');
-      this.bccEmails = bcc.join(', ');
+      this.bccEmails = combinedBcc.join(', ');
     },
     fetchAndSetReplyTo() {
       const replyStorageKey = LOCAL_STORAGE_KEYS.MESSAGE_REPLY_TO;

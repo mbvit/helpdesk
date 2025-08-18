@@ -43,7 +43,7 @@ class Api::V1::Widget::MessagesController < Api::V1::Widget::BaseController
   end
 
   def set_conversation
-    @conversation = create_conversation if conversation.nil?
+    @conversation = create_conversation if conversation.nil? || conversation.merged_with_id.present?
   end
 
   def message_finder_params

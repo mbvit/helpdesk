@@ -280,6 +280,9 @@ export default {
 
       return { incoming, outgoing };
     },
+    isMerged() {
+    return Boolean(this.currentChat?.merged_with_id);
+  },
   },
 
   watch: {
@@ -617,8 +620,15 @@ export default {
         </div>
       </div>
       <ReplyBox
+        v-if="!isMerged"
         v-model:popout-reply-box="isPopOutReplyBox"
         @toggle-popout="showPopOutReplyBox"
+      />
+      <Banner
+        v-if="isMerged"
+        color-scheme="alert"
+        class="mx-2 mt-2 overflow-hidden rounded-lg"
+        banner-message="this conversation is merged"
       />
     </div>
   </div>

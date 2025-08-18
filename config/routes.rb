@@ -103,6 +103,7 @@ Rails.application.routes.draw do
               get :meta
               get :search
               post :filter
+              post :merge
             end
             scope module: :conversations do
               resources :messages, only: [:index, :create, :destroy, :update] do

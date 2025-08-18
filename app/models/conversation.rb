@@ -28,6 +28,7 @@
 #  contact_inbox_id       :bigint
 #  display_id             :integer          not null
 #  inbox_id               :integer          not null
+#  merged_with_id         :bigint
 #  sla_policy_id          :bigint
 #  team_id                :bigint
 #  ticket_id              :string
@@ -44,6 +45,7 @@
 #  index_conversations_on_first_reply_created_at      (first_reply_created_at)
 #  index_conversations_on_id_and_account_id           (account_id,id)
 #  index_conversations_on_inbox_id                    (inbox_id)
+#  index_conversations_on_merged_with_id              (merged_with_id)
 #  index_conversations_on_priority                    (priority)
 #  index_conversations_on_status_and_account_id       (status,account_id)
 #  index_conversations_on_status_and_priority         (status,priority)
@@ -51,6 +53,10 @@
 #  index_conversations_on_ticket_id                   (ticket_id) UNIQUE
 #  index_conversations_on_uuid                        (uuid) UNIQUE
 #  index_conversations_on_waiting_since               (waiting_since)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (merged_with_id => conversations.id)
 #
 
 class Conversation < ApplicationRecord
@@ -106,6 +112,7 @@ class Conversation < ApplicationRecord
   belongs_to :contact_inbox
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
+  has_many :merged_conversations, class_name: 'Conversation', foreign_key: 'merged_with_id', dependent: :destroy
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true
@@ -116,6 +123,8 @@ class Conversation < ApplicationRecord
   has_many :reporting_events, dependent: :destroy_async
   has_many :conversation_escalations, dependent: :destroy
 
+  has_many :conversation_contact_participants, dependent: :destroy
+  has_many :cc_contacts, through: :conversation_contact_participants, source: :contact
   before_save :ensure_snooze_until_reset
   before_create :determine_conversation_status
   before_create :ensure_waiting_since

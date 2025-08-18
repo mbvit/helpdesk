@@ -538,6 +538,23 @@ const actions = {
     }
   },
 
+  mergeConversations: async ({ commit, dispatch }, { primaryConversationId, mergeIds }) => {
+    commit(types.SET_MERGE_CONVERSATION_STATUS, true);
+    try {
+      const response = await ConversationApi.merge(mergeIds, primaryConversationId);
+      
+      console.log(response.data)
+      
+      dispatch('conversationStats/get', {}, { root: true });
+      
+      return response.data;
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      commit(types.SET_MERGE_CONVERSATION_STATUS, false); 
+    }
+  },
+
   ...messageReadActions,
   ...messageTranslateActions,
 };
