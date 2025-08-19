@@ -38,7 +38,6 @@ export default {
       searchResults: [],
       parentConversation: undefined,
       isLoading: false,
-      // --- Added to control the confirmation modal ---
       showConfirmMergeDialog: false,
     };
   },
@@ -99,10 +98,11 @@ export default {
           primaryConversationId: this.primaryConversation.id,
           mergeIds: [this.parentConversation.id],
         });
+        await this.pauseEscalationAfterMerge();
         this.isLoading = false;
         useAlert(this.$t('MERGE_CONVERSATIONS.FORM.SUCCESS_MESSAGE'));
-        this.closeConfirmMergeDialog(); // Close confirmation modal
-        this.onClose(); // Close main modal
+        this.closeConfirmMergeDialog();
+        this.onClose();
         await this.$store.dispatch(
           'getConversation',
           this.primaryConversation.id
@@ -124,6 +124,23 @@ export default {
     },
     closeConfirmMergeDialog() {
       this.showConfirmMergeDialog = false;
+    },
+    async pauseEscalationAfterMerge() {
+      if (this.primaryConversation?.escalation_status !== 'running') {
+        return;
+      }
+
+      try {
+        await this.$store.dispatch('PauseResumeEscalation', {
+          conversationId: this.primaryConversation.id,
+          action: 'pause',
+        });
+      } catch (error) {
+        console.error(
+          'Failed to auto-pause escalation after merge:',
+          error
+        );
+      }
     },
   },
 };
