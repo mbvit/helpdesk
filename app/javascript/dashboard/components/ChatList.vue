@@ -950,6 +950,7 @@ watch(conversationFilters, (newVal, oldVal) => {
               :folders-id="foldersId"
               :conversation-type="conversationType"
               :show-assignee="showAssigneeInConversationCard"
+              :class="{ 'bg-yellow-200/20': !!item.merged_with_id }"
               @select-conversation="selectConversation"
               @de-select-conversation="deSelectConversation"
             />
