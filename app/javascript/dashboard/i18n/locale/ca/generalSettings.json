@@ -3,7 +3,7 @@
     "LIMIT_MESSAGES": {
       "CONVERSATION": "You have exceeded the conversation limit. Hacker plan allows only 500 conversations.",
       "INBOXES": "You have exceeded the inbox limit. Hacker plan only supports website live-chat. Additional inboxes like email, WhatsApp etc. require a paid plan.",
-      "AGENTS": "You have exceeded the agent limit. Hacker plan allows only 2 agents.",
+      "AGENTS": "You have exceeded the agent limit. Your plan only allows {allowedAgents} agents.",
       "NON_ADMIN": "Please contact your administrator to upgrade the plan and continue using all features."
     },
     "TITLE": "Configuració del compte",
@@ -123,7 +123,7 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "Ara podeu rebre correus electrònics al vostre domini personalitzat."
       }
     },
-    "UPDATE_CHATWOOT": "L'actualització {latestChatwootVersion} per VegaVision està disponible. Si us plau, actualitza l'instancia.",
+    "UPDATE_VegaVision": "L'actualització {latestVegaVisionVersion} per VegaVision està disponible. Si us plau, actualitza l'instancia.",
     "LEARN_MORE": "Aprèn més",
     "PAYMENT_PENDING": "El teu pagament està pendent. Actualitzeu la vostra informació de pagament per continuar utilitzant VegaVision",
     "UPGRADE": "Upgrade to continue using VegaVision",
@@ -134,6 +134,7 @@
     "MULTISELECT": {
       "ENTER_TO_SELECT": "Presiona retorn (tecla enter) per seleccionar",
       "ENTER_TO_REMOVE": "Presiona retorn (tecla enter) per eliminar",
+      "NO_OPTIONS": "List is empty",
       "SELECT_ONE": "Selecciona un",
       "SELECT": "Selecciona"
     }

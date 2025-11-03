@@ -3,7 +3,7 @@
     "LIMIT_MESSAGES": {
       "CONVERSATION": "You have exceeded the conversation limit. Hacker plan allows only 500 conversations.",
       "INBOXES": "You have exceeded the inbox limit. Hacker plan only supports website live-chat. Additional inboxes like email, WhatsApp etc. require a paid plan.",
-      "AGENTS": "You have exceeded the agent limit. Hacker plan allows only 2 agents.",
+      "AGENTS": "You have exceeded the agent limit. Your plan only allows {allowedAgents} agents.",
       "NON_ADMIN": "Please contact your administrator to upgrade the plan and continue using all features."
     },
     "TITLE": "Kontoinnstillinger",
@@ -123,7 +123,7 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "Du kan motta e-post i ditt egendefinerte domene nå."
       }
     },
-    "UPDATE_CHATWOOT": "En oppdatering av {latestChatwootVersion} for VegaVision er tilgjengelig. Oppdater din instans.",
+    "UPDATE_VegaVision": "En oppdatering av {latestVegaVisionVersion} for VegaVision er tilgjengelig. Oppdater din instans.",
     "LEARN_MORE": "Learn more",
     "PAYMENT_PENDING": "Your payment is pending. Please update your payment information to continue using VegaVision",
     "UPGRADE": "Upgrade to continue using VegaVision",
@@ -134,6 +134,7 @@
     "MULTISELECT": {
       "ENTER_TO_SELECT": "Trykk enter for å velge",
       "ENTER_TO_REMOVE": "Trykk enter for å fjerne",
+      "NO_OPTIONS": "List is empty",
       "SELECT_ONE": "Velg en",
       "SELECT": "Select"
     }

@@ -4,7 +4,7 @@
     "TITLE": "Registre",
     "TESTIMONIAL_HEADER": "Només cal un pas per avançar",
     "TESTIMONIAL_CONTENT": "Esteu a un pas de captar els vostres clients, retenir-los i trobar-ne de nous.",
-    "TERMS_ACCEPT": "En crear un compte, acceptes els nostres <a href=\"https://www.chatwoot.com/terms\">T&C</a> i <a href=\"https://www.chatwoot.com/privacy-policy\">Política de privadesa</a>",
+    "TERMS_ACCEPT": "En crear un compte, acceptes els nostres <a href=\"https://www.VegaVision.com/terms\">T&C</a> i <a href=\"https://www.VegaVision.com/privacy-policy\">Política de privadesa</a>",
     "OAUTH": {
       "GOOGLE_SIGNUP": "Registra't amb Google"
     },
@@ -27,15 +27,20 @@
       "LABEL": "Contrasenya",
       "PLACEHOLDER": "Contrasenya",
       "ERROR": "La contrasenya és massa curta",
-      "IS_INVALID_PASSWORD": "Password should contain atleast 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character"
+      "IS_INVALID_PASSWORD": "Password should contain atleast 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character",
+      "REQUIREMENTS_LENGTH": "At least 6 characters long",
+      "REQUIREMENTS_UPPERCASE": "At least one uppercase letter",
+      "REQUIREMENTS_LOWERCASE": "At least one lowercase letter",
+      "REQUIREMENTS_NUMBER": "At least one number",
+      "REQUIREMENTS_SPECIAL": "At least one special character"
     },
     "CONFIRM_PASSWORD": {
       "LABEL": "Confirma la contrasenya",
       "PLACEHOLDER": "Confirma la contrasenya",
-      "ERROR": "La contrasenya no coincideix."
+      "ERROR": "La contrasenya no coindeix."
     },
     "API": {
-      "SUCCESS_MESSAGE": "Registrat correctament",
+      "SUCCESS_MESSAGE": "Registration Successful",
       "ERROR_MESSAGE": "No s'ha pogut connectar amb el servidor Woot. Torna-ho a provar més endavant"
     },
     "SUBMIT": "Crear un compte",

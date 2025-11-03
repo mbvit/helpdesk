@@ -3,7 +3,7 @@
     "LIMIT_MESSAGES": {
       "CONVERSATION": "You have exceeded the conversation limit. Hacker plan allows only 500 conversations.",
       "INBOXES": "You have exceeded the inbox limit. Hacker plan only supports website live-chat. Additional inboxes like email, WhatsApp etc. require a paid plan.",
-      "AGENTS": "You have exceeded the agent limit. Hacker plan allows only 2 agents.",
+      "AGENTS": "You have exceeded the agent limit. Your plan only allows {allowedAgents} agents.",
       "NON_ADMIN": "Please contact your administrator to upgrade the plan and continue using all features."
     },
     "TITLE": "アカウント設定",
@@ -123,9 +123,9 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "カスタムドメインでのメール受信が有効になりました。"
       }
     },
-    "UPDATE_CHATWOOT": "Chatwootのアップデート {latestChatwootVersion} が利用可能です。インスタンスを更新してください。",
+    "UPDATE_VegaVision": "VegaVisionのアップデート {latestVegaVisionVersion} が利用可能です。インスタンスを更新してください。",
     "LEARN_MORE": "詳細を見る",
-    "PAYMENT_PENDING": "お支払いが保留中です。支払い情報を更新してChatwootの利用を継続してください。",
+    "PAYMENT_PENDING": "お支払いが保留中です。支払い情報を更新してVegaVisionの利用を継続してください。",
     "UPGRADE": "Upgrade to continue using VegaVision",
     "LIMITS_UPGRADE": "アカウントの使用制限を超えました。プランをアップグレードして利用を続けてください。",
     "OPEN_BILLING": "請求情報を開く"
@@ -134,6 +134,7 @@
     "MULTISELECT": {
       "ENTER_TO_SELECT": "Enterキーで選択",
       "ENTER_TO_REMOVE": "Enterキーで削除",
+      "NO_OPTIONS": "List is empty",
       "SELECT_ONE": "1つを選択",
       "SELECT": "選択"
     }

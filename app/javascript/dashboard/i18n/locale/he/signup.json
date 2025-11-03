@@ -4,7 +4,7 @@
     "TITLE": "הירשם",
     "TESTIMONIAL_HEADER": "כל מה שצריך זה צעד אחד כדי להתקדם",
     "TESTIMONIAL_CONTENT": "אתה במרחק צעד אחד מלהפעיל את הלקוחות שלך, לשמר אותם ולמצוא חדשים.",
-    "TERMS_ACCEPT": "על ידי יצירת חשבון, אתה מסכים ל<a href=\"https://www.chatwoot.com/terms\">תנאים וההגבלות</a> ול-<a href=\"https://www.chatwoot.com/ שלנו privacy-policy\">מדיניות הפרטיות</a>",
+    "TERMS_ACCEPT": "על ידי יצירת חשבון, אתה מסכים ל<a href=\"https://www.VegaVision.com/terms\">תנאים וההגבלות</a> ול-<a href=\"https://www.VegaVision.com/ שלנו privacy-policy\">מדיניות הפרטיות</a>",
     "OAUTH": {
       "GOOGLE_SIGNUP": "הירשם לגוגל"
     },
@@ -27,15 +27,20 @@
       "LABEL": "סיסמה",
       "PLACEHOLDER": "סיסמה",
       "ERROR": "הסיסמה קצרה מדי",
-      "IS_INVALID_PASSWORD": "הסיסמה צריכה להכיל לפחות אות אחת גדולה, אות קטנה אחת, מספר אחד ותו מיוחד אחד"
+      "IS_INVALID_PASSWORD": "הסיסמה צריכה להכיל לפחות אות אחת גדולה, אות קטנה אחת, מספר אחד ותו מיוחד אחד",
+      "REQUIREMENTS_LENGTH": "At least 6 characters long",
+      "REQUIREMENTS_UPPERCASE": "At least one uppercase letter",
+      "REQUIREMENTS_LOWERCASE": "At least one lowercase letter",
+      "REQUIREMENTS_NUMBER": "At least one number",
+      "REQUIREMENTS_SPECIAL": "At least one special character"
     },
     "CONFIRM_PASSWORD": {
       "LABEL": "אמת סיסמה",
       "PLACEHOLDER": "אמת סיסמה",
-      "ERROR": "סיסמה לא מתאימה"
+      "ERROR": "סיסמאות לא תואמות"
     },
     "API": {
-      "SUCCESS_MESSAGE": "ההרשמה הצליחה",
+      "SUCCESS_MESSAGE": "Registration Successful",
       "ERROR_MESSAGE": "לא ניתן להתחבר לשרת Woot, נסה שוב מאוחר יותר"
     },
     "SUBMIT": "צור חשבון",
