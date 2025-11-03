@@ -9,6 +9,8 @@
 #  cached_label_list      :text
 #  contact_last_seen_at   :datetime
 #  custom_attributes      :jsonb
+#  escalation_enabled     :boolean          default(FALSE)
+#  escalation_status      :string           default("no_escalation")
 #  first_reply_created_at :datetime
 #  identifier             :string
 #  last_activity_at       :datetime         not null
@@ -26,8 +28,10 @@
 #  contact_inbox_id       :bigint
 #  display_id             :integer          not null
 #  inbox_id               :integer          not null
+#  merged_with_id         :bigint
 #  sla_policy_id          :bigint
 #  team_id                :bigint
+#  ticket_id              :string
 #
 # Indexes
 #
@@ -41,12 +45,18 @@
 #  index_conversations_on_first_reply_created_at      (first_reply_created_at)
 #  index_conversations_on_id_and_account_id           (account_id,id)
 #  index_conversations_on_inbox_id                    (inbox_id)
+#  index_conversations_on_merged_with_id              (merged_with_id)
 #  index_conversations_on_priority                    (priority)
 #  index_conversations_on_status_and_account_id       (status,account_id)
 #  index_conversations_on_status_and_priority         (status,priority)
 #  index_conversations_on_team_id                     (team_id)
+#  index_conversations_on_ticket_id                   (ticket_id) UNIQUE
 #  index_conversations_on_uuid                        (uuid) UNIQUE
 #  index_conversations_on_waiting_since               (waiting_since)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (merged_with_id => conversations.id)
 #
 
 class Conversation < ApplicationRecord
@@ -71,6 +81,7 @@ class Conversation < ApplicationRecord
 
   enum status: { open: 0, resolved: 1, pending: 2, snoozed: 3 }
   enum priority: { low: 0, medium: 1, high: 2, urgent: 3 }
+  enum escalation_status: { no_escalation: 'none', running: 'running', paused: 'paused', completed: 'completed' }
 
   scope :unassigned, -> { where(assignee_id: nil) }
   scope :assigned, -> { where.not(assignee_id: nil) }
@@ -101,6 +112,7 @@ class Conversation < ApplicationRecord
   belongs_to :contact_inbox
   belongs_to :team, optional: true
   belongs_to :campaign, optional: true
+  has_many :merged_conversations, class_name: 'Conversation', foreign_key: 'merged_with_id', dependent: :destroy
 
   has_many :mentions, dependent: :destroy_async
   has_many :messages, dependent: :destroy_async, autosave: true
@@ -109,14 +121,17 @@ class Conversation < ApplicationRecord
   has_many :notifications, as: :primary_actor, dependent: :destroy_async
   has_many :attachments, through: :messages
   has_many :reporting_events, dependent: :destroy_async
+  has_many :conversation_escalations, dependent: :destroy
 
+  has_many :conversation_contact_participants, dependent: :destroy
+  has_many :cc_contacts, through: :conversation_contact_participants, source: :contact
   before_save :ensure_snooze_until_reset
   before_create :determine_conversation_status
   before_create :ensure_waiting_since
 
   after_update_commit :execute_after_update_commit_callbacks
   after_create_commit :notify_conversation_creation
-  after_create_commit :load_attributes_created_by_db_triggers
+  after_create_commit :load_attributes_created_by_db_triggers, :assign_ticket_id
 
   delegate :auto_resolve_after, to: :account
 
@@ -247,7 +262,7 @@ class Conversation < ApplicationRecord
   end
 
   def list_of_keys
-    %w[team_id assignee_id status snoozed_until custom_attributes label_list waiting_since first_reply_created_at
+    %w[team_id assignee_id status snoozed_until custom_attributes label_list waiting_since first_reply_created_at escalation_status
        priority]
   end
 
@@ -305,6 +320,10 @@ class Conversation < ApplicationRecord
     return unless additional_attributes['referer']
 
     self['additional_attributes']['referer'] = nil unless url_valid?(additional_attributes['referer'])
+  end
+
+  def assign_ticket_id
+    update_column(:ticket_id, "TCK-#{id}")
   end
 
   # creating db triggers

@@ -82,7 +82,9 @@ const contact = computed(() => contactGetter.value(contactId.value));
 const contactAdditionalAttributes = computed(
   () => contact.value.additional_attributes || {}
 );
-
+const isConversationMerged = computed(
+  () => !!currentChat.value.merged_with_id
+);
 const getContactDetails = () => {
   if (contactId.value) {
     store.dispatch('contacts/show', { id: contactId.value });
@@ -142,6 +144,7 @@ onMounted(() => {
             class="conversation--actions"
           >
             <AccordionItem
+              v-if="!isConversationMerged"
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_ACTIONS')"
               :is-open="isContactSidebarItemOpen('is_conv_actions_open')"
               @toggle="
@@ -230,6 +233,7 @@ onMounted(() => {
             feature-key="macros"
           >
             <AccordionItem
+              v-if="!isConversationMerged"
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.MACROS')"
               :is-open="isContactSidebarItemOpen('is_macro_open')"
               compact

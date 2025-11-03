@@ -94,6 +94,8 @@
       "SNOOZED_UNTIL_TOMORROW": "Snoozed until tomorrow",
       "SNOOZED_UNTIL_NEXT_WEEK": "Snoozed until next week",
       "SNOOZED_UNTIL_NEXT_REPLY": "Snoozed until next reply",
+      "ALREADY_MERGED": "Conversation already merged",
+      "MERGE": "Merge Conversation",
       "SLA_STATUS": {
         "FRT": "FRT {status}",
         "NRT": "NRT {status}",
@@ -425,5 +427,38 @@
   },
   "GALLERY_VIEW": {
     "ERROR_DOWNLOADING": "Unable to download attachment. Please try again"
+  },
+  "MERGE_CONVERSATIONS": {
+  "TITLE": "Merge conversations",
+  "DESCRIPTION": "Combine two conversations into one. The selected conversation will be merged into the parent conversation.",
+  "PRIMARY": {
+    "TITLE": "Current conversation",
+    "HELP_LABEL": "Will be merged into parent"
+  },
+  "PARENT": {
+    "TITLE": "Parent conversation",
+    "HELP_LABEL": "Will retain all messages",
+    "PLACEHOLDER": "Search for parent conversation"
+  },
+  "SEARCH": {
+    "ERROR_MESSAGE": "Could not search for conversations. Please try again later."
+  },
+  "FORM": {
+    "PARENT_CONVERSATION": {
+      "ERROR": "Please select a conversation to merge with"
+      
+    },
+    "SUCCESS_MESSAGE": "Conversations merged successfully",
+    "ERROR_MESSAGE": "Could not merge conversations, try again!",
+    "CANCEL": "Cancel",
+    "SUBMIT": "Merge conversations",
+    "CHANNEL_MISMATCH_ERROR": "Cannot merge conversations of different channels for separate contacts."
+  },
+  "CONFIRM": {
+    "TITLE": "Confirm Merge",
+    "MESSAGE": "This action is irreversible. Are you sure you want to proceed?",
+    "CANCEL": "Cancel",
+    "YES_MERGE": "Yes, Merge"
   }
+}
 }

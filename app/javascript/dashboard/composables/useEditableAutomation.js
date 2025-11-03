@@ -91,12 +91,31 @@ export function useEditableAutomation() {
    * @returns {Array} An array of manifested actions.
    */
   const manifestActions = (automation, automationActionTypes) => {
-    return automation.actions.map(action => ({
-      ...action,
-      action_params: action.action_params.length
-        ? generateActionsArray(action, automationActionTypes)
-        : [],
-    }));
+    return automation.actions.map(action => {
+      const inputType = automationActionTypes.find(
+        item => item.key === action.action_name
+      )?.inputType;
+  
+      // Handle ticket_escalation action specifically
+      if (action.action_name === 'ticket_escalation') {
+        return {
+          ...action,
+          thresholdTime: action.action_params[0]?.threshold || '', 
+          // thresholdUnit: action.action_params[0]?.unit || 'Minutes',
+          action_params: action.action_params.length
+            ? generateActionsArray(action, automationActionTypes)
+            : [],
+        };
+      }
+  
+      // Default handling for other actions
+      return {
+        ...action,
+        action_params: action.action_params.length
+          ? generateActionsArray(action, automationActionTypes)
+          : [],
+      };
+    });
   };
 
   /**

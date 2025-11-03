@@ -244,6 +244,10 @@ export const AUTOMATIONS = {
         key: 'send_attachment',
         name: 'SEND_ATTACHMENT',
       },
+      {
+        key: 'ticket_escalation',
+        name: 'TICKET_ESCALATION',
+      }
     ],
   },
   conversation_updated: {
@@ -698,4 +702,9 @@ export const AUTOMATION_ACTION_TYPES = [
     label: 'ADD_SLA',
     inputType: 'search_select',
   },
+  {
+    key: 'ticket_escalation',
+    label: 'TICKET_ESCALATION',
+    inputType: 'search_select',
+  }
 ];

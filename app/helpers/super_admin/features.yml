@@ -25,7 +25,7 @@ agent_capacity:
 audit_logs:
   name: 'Audit Logs'
   description: 'Track and trace account activities with ease with detailed audit logs.'
-  enabled: <%= (ChatwootHub.pricing_plan != 'community') %>
+  enabled: <%= (ChatwootHub.pricing_plan == 'community') %>
   icon: 'icon-menu-search-line'
   enterprise: true
 disable_branding:

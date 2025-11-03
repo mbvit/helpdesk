@@ -9,6 +9,8 @@ class ConversationBuilder
 
   def look_up_exising_conversation
     return unless @contact_inbox.inbox.lock_to_single_conversation?
+    last_conversation = @contact_inbox.conversations.last
+    return if last_conversation&.merged_with_id.present?
 
     @contact_inbox.conversations.last
   end

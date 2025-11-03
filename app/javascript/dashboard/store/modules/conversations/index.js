@@ -22,6 +22,9 @@ const state = {
   syncConversationsMessages: {},
   conversationFilters: {},
   copilotAssistant: {},
+  uiFlags: {
+    isMerging: false,
+  }
 };
 
 // mutations
@@ -318,6 +321,9 @@ export const mutations = {
   [types.SET_INBOX_CAPTAIN_ASSISTANT](_state, data) {
     _state.copilotAssistant = data.assistant;
   },
+  [types.SET_MERGE_CONVERSATION_STATUS](_state, status) {
+    _state.uiFlags.isMerging = status;
+  }
 };
 
 export default {

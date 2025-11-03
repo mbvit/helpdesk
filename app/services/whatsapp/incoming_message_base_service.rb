@@ -102,13 +102,15 @@ class Whatsapp::IncomingMessageBaseService
   def set_conversation
     # if lock to single conversation is disabled, we will create a new conversation if previous conversation is resolved
     @conversation = if @inbox.lock_to_single_conversation
-                      @contact_inbox.conversations.last
+                      @contact_inbox.conversations.where(merged_with_id: nil)
+                      .last
                     else
                       @contact_inbox.conversations
-                                    .where.not(status: :resolved).last
+                                    .where.not(status: :resolved)
+                                    .where(merged_with_id: nil)
+                                    .last
                     end
     return if @conversation
-
     @conversation = ::Conversation.create!(conversation_params)
   end
 

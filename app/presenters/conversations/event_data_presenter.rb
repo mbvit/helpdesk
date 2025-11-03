@@ -17,6 +17,18 @@ class Conversations::EventDataPresenter < SimpleDelegator
       first_reply_created_at: first_reply_created_at,
       priority: priority,
       waiting_since: waiting_since.to_i,
+      escalation_status: escalation_status,
+      escalations: conversation_escalations.map do |escalation|
+        {
+          id: escalation.id,
+          delay_in_seconds: escalation.delay_in_seconds,
+          remaining_time_in_seconds: escalation.remaining_time_in_seconds,
+          scheduled_at: escalation.scheduled_at,
+          status: escalation.status,
+          team_id: escalation.team_id,
+          team_name: escalation.team&.name
+        }
+      end,
       **push_timestamps
     }
   end

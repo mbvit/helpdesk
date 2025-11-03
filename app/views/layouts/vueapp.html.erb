@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>
-      <%= @global_config['INSTALLATION_NAME'] %>
+      <%= @global_config['INSTALLATION_NAME'] %>- <%= @account_name %>
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=0"/>
     <% if @global_config['DISPLAY_MANIFEST'] %>
@@ -62,6 +62,7 @@
       window.browserConfig = {
         browser_name: '<%= browser.name %>',
       }
+      const accountName = window.globalConfig.ACCOUNT_NAME;
       window.errorLoggingConfig = '<%= ENV.fetch('SENTRY_FRONTEND_DSN', '') || ENV.fetch('SENTRY_DSN', '') %>'
     </script>
     <% if @global_config['ANALYTICS_TOKEN'].present? %>

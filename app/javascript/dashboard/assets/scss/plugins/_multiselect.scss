@@ -159,6 +159,15 @@
   }
 }
 
+.board_pipeline_select_wrap {
+  display: flex;
+  flex-direction: row;
+
+  .multiselect__tags {
+    width: 200px;
+  }
+}
+
 .multiselect-wrap--small {
   // To be removed one SLA reports date picker is created
   &.tiny {
