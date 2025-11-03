@@ -426,6 +426,7 @@ export default {
         this.quotedReplyPreference &&
         !!this.quotedEmailText
       );
+    },
     isMerged() {
       return Boolean(this.currentChat?.merged_with_id);
     },

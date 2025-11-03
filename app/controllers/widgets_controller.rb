@@ -70,12 +70,13 @@ class WidgetsController < ActionController::Base
   end
 
   def allow_iframe_requests
-    if @web_widget.allowed_domains.blank?
-      response.headers.delete('X-Frame-Options')
-    else
-      domains = @web_widget.allowed_domains.split(',').map(&:strip).join(' ')
-      response.headers['Content-Security-Policy'] = "frame-ancestors #{domains}"
-    end
+    response.headers.delete('X-Frame-Options')
+    
+    return unless @web_widget.has_attribute?(:allowed_domains)
+    return if @web_widget.allowed_domains.blank?
+
+    domains = @web_widget.allowed_domains.split(',').map(&:strip).join(' ')
+    response.headers['Content-Security-Policy'] = "frame-ancestors #{domains}"
   end
 end
 
