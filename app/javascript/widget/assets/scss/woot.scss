@@ -1,9 +1,9 @@
-@import 'reset';
+@import './reset';
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 @import 'shared/assets/fonts/widget_fonts';
-@import 'views/conversation';
+@import './views/conversation';
 
 
 html,
