@@ -5,6 +5,13 @@ import WootMessageEditor from 'dashboard/components/widgets/WootWriter/Editor.vu
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
 export default {
+  data() {
+    return {
+    thresholdTime: null,
+    thresholdUnit: 'Minutes',
+    time: 0,
+  };
+},
   components: {
     AutomationActionTeamMessageInput,
     AutomationActionFileInput,
@@ -40,6 +47,32 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedResponse: {
+      type: Object,
+      default: () => null,
+    },
+    index: {
+      type: Number,
+      default: 0,
+    },
+  },
+  mounted() {
+    if (this.modelValue?.action_name === 'ticket_escalation') {
+       const updatedPayload = { ...this.modelValue };
+
+      if (Array.isArray(updatedPayload.action_params)) {
+        // const thresholdTime = this.selectedResponse.actions[0].action_params[1];
+        // const thresholdUnit = this.selectedResponse.actions[0].action_params[2];
+
+        updatedPayload.action_params = updatedPayload.action_params.map((param, idx) => ({
+          ...param,
+          thresholdTime : this.selectedResponse.action_params[1],
+          thresholdUnit : this.selectedResponse.action_params[2],
+        }));
+      }
+
+      this.$emit('update:modelValue', updatedPayload);
+    }
   },
   emits: ['update:modelValue', 'input', 'removeAction', 'resetAction'],
   computed: {
@@ -61,8 +94,12 @@ export default {
       },
       set(value) {
         const payload = this.modelValue || {};
-        this.$emit('update:modelValue', { ...payload, action_params: value });
-        this.$emit('input', { ...payload, action_params: value });
+
+        value = {...value, thresholdTime: this.thresholdTime, thresholdUnit: payload.action_params[0]?.thresholdUnit || this.thresholdUnit};
+
+        
+        this.$emit('update:modelValue', { ...payload, action_params: {...payload.action_params, ...value} });
+        this.$emit('input', { ...payload, action_params: {...payload.action_params, ...value} });
       },
     },
     inputType() {
@@ -86,15 +123,105 @@ export default {
         this.action_params = value;
       },
     },
+    thresholdTime: {
+      get() {
+        if (!this.modelValue) return null;
+        return this.modelValue.action_params?.thresholdTime || this.modelValue.action_params[0]?.thresholdTime  || null;
+      },
+      set(value) {
+        if (!this.modelValue) return;
+
+        const payload = this.modelValue || {};
+        const actionParams = payload.action_params;
+
+        let updatedActionParams;
+
+        if (Array.isArray(actionParams)) {
+          // Case: array of objects — update first object in array
+          updatedActionParams = [
+            {
+              ...actionParams[0],
+              thresholdTime: value,
+            },
+            // ...actionParams.slice(1),
+          ];
+        } else {
+          // Case: object — update directly
+          updatedActionParams = {
+            ...actionParams,
+            thresholdTime: value,
+          };
+        }
+
+        const updatedPayload = {
+          ...payload,
+          action_params: updatedActionParams,
+        };
+
+        this.$emit('update:modelValue', updatedPayload);
+        this.$emit('input', updatedPayload); // Vue 2 compatibility
+      },
+    },
+
+    thresholdUnit: {
+      get() {
+        if (!this.modelValue) return null;
+        return this.modelValue.action_params?.thresholdUnit || this.modelValue.action_params[0]?.thresholdUnit || null;
+      },
+      set(value) {
+        if (!this.modelValue) return;
+
+        const payload = this.modelValue || {};
+        const actionParams = payload.action_params;
+
+        let updatedActionParams;
+
+        if (Array.isArray(actionParams)) {
+          // Case: array of objects — update first object in array
+          updatedActionParams = [
+            {
+              ...actionParams[0],
+              thresholdUnit: value,
+            },
+            // ...actionParams.slice(1),
+          ];
+        } else {
+          // Case: object — update directly
+          updatedActionParams = {
+            ...actionParams,
+            thresholdUnit: value,
+          };
+        }
+
+        const updatedPayload = {
+          ...payload,
+          action_params: updatedActionParams,
+        };
+
+        this.$emit('update:modelValue', updatedPayload);
+        this.$emit('input', updatedPayload); // Vue 2 compatibility
+      },
+    },
   },
+  watch: {
+  action_params: {
+    immediate: true,
+    handler(val) {
+      if (this.modelValue?.action_name === 'ticket_escalation') {
+        this.thresholdTime = val?.threshold || null;
+        this.thresholdUnit = val?.threshold_unit || 'Minutes';
+      }
+    },
+  },
+},
   methods: {
-    removeAction() {
-      this.$emit('removeAction');
-    },
-    resetAction() {
-      this.$emit('resetAction');
-    },
+  removeAction() {
+    this.$emit('removeAction');
   },
+  resetAction() {
+    this.$emit('resetAction');
+  },
+},  
 };
 </script>
 
@@ -104,7 +231,7 @@ export default {
       <select
         v-model="action_name"
         class="action__question"
-        :class="{ 'full-width': !showActionInput }"
+        :class="{ 'full-width': !showActionInput ,'flex-[0.8]':modelValue.action_name === 'ticket_escalation' }"
         @change="resetAction()"
       >
         <option
@@ -115,11 +242,11 @@ export default {
           {{ attribute.label }}
         </option>
       </select>
-      <div v-if="showActionInput" class="filter__answer--wrap">
+      <div v-if="showActionInput" class="filter__answer--wrap flex-1">
         <div v-if="inputType" class="w-full">
           <div
             v-if="inputType === 'search_select'"
-            class="multiselect-wrap--small"
+            :class="modelValue.action_name === 'ticket_escalation' ? 'board_pipeline_select_wrap multiselect-wrap--small' : 'multiselect-wrap--small'"
           >
             <multiselect
               v-model="action_params"
@@ -127,13 +254,39 @@ export default {
               label="name"
               :placeholder="$t('FORMS.MULTISELECT.SELECT')"
               selected-label
-              :select-label="$t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
+              select-label="select"
               deselect-label=""
               :max-height="160"
               :options="dropdownValues"
               :allow-empty="false"
               :option-height="104"
+            >
+              <template #noOptions>
+                {{ $t('FORMS.MULTISELECT.NO_OPTIONS') }}
+              </template>
+            </multiselect>
+            <div
+            v-if="modelValue.action_name === 'ticket_escalation'"
+            class="multiselect-wrap--small flex items-center gap-2 w-full ml-2"
+          >
+            <!-- Time Input -->
+            <input
+              type="number"
+              v-model="thresholdTime"
+              class="border border-gray-300 rounded-lg px-2 py-1 text-sm w-20 flex-1"
+              placeholder="Time"
             />
+
+            <!-- Unit Dropdown -->
+            <select
+              v-model="thresholdUnit"
+              class="border border-gray-300 rounded-lg px-2 py-1 text-sm w-24 flex-[0.5]"
+            >
+              <option value="Minutes">Minutes</option>
+              <option value="Hours">Hours</option>
+              <option value="Days">Days</option>
+            </select>
+          </div>
           </div>
           <div
             v-else-if="inputType === 'multi_select'"
@@ -152,7 +305,11 @@ export default {
               :options="dropdownValues"
               :allow-empty="false"
               :option-height="104"
-            />
+            >
+              <template #noOptions>
+                {{ $t('FORMS.MULTISELECT.NO_OPTIONS') }}
+              </template>
+            </multiselect>
           </div>
           <input
             v-else-if="inputType === 'email'"
@@ -266,11 +423,11 @@ export default {
   @apply flex items-center justify-center relative my-2.5 mx-0;
 
   .operator__line {
-    @apply absolute w-full border-b border-solid border-slate-75 dark:border-slate-600;
+    @apply absolute w-full border-b border-solid border-n-weak;
   }
 
   .operator__select {
-    margin-bottom: var(--space-zero) !important;
+    margin-bottom: 0 !important;
     @apply relative w-auto;
   }
 }
@@ -280,6 +437,14 @@ export default {
 }
 .action-message {
   @apply mt-2 mx-0 mb-0;
+}
+.board_pipeline_select_wrap{
+  display: flex;
+  flex-direction: row;
+ 
+  .multiselect__tags{
+    width: 200px;
+  }
 }
 // Prosemirror does not have a native way of hiding the menu bar, hence
 ::v-deep .ProseMirror-menubar {

@@ -3,7 +3,7 @@
     "LIMIT_MESSAGES": {
       "CONVERSATION": "You have exceeded the conversation limit. Hacker plan allows only 500 conversations.",
       "INBOXES": "You have exceeded the inbox limit. Hacker plan only supports website live-chat. Additional inboxes like email, WhatsApp etc. require a paid plan.",
-      "AGENTS": "You have exceeded the agent limit. Hacker plan allows only 2 agents.",
+      "AGENTS": "You have exceeded the agent limit. Your plan only allows {allowedAgents} agents.",
       "NON_ADMIN": "Please contact your administrator to upgrade the plan and continue using all features."
     },
     "TITLE": "Podešavanja naloga",
@@ -123,7 +123,7 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "Sada možete da dobijate e-poruke u vaš prilagođeni domen."
       }
     },
-    "UPDATE_CHATWOOT": "Dostupna je nadogradnja {latestChatwootVersion} za VegaVision. Molim vas nadogradite vaše izdanje.",
+    "UPDATE_VegaVision": "Dostupna je nadogradnja {latestVegaVisionVersion} za VegaVision. Molim vas nadogradite vaše izdanje.",
     "LEARN_MORE": "Saznajte više",
     "PAYMENT_PENDING": "Your payment is pending. Please update your payment information to continue using VegaVision",
     "UPGRADE": "Upgrade to continue using VegaVision",
@@ -134,6 +134,7 @@
     "MULTISELECT": {
       "ENTER_TO_SELECT": "Pritisnite enter da bi ste izabrali",
       "ENTER_TO_REMOVE": "Pritisnite enter da bi ste uklonili",
+      "NO_OPTIONS": "List is empty",
       "SELECT_ONE": "Izaberite jedno",
       "SELECT": "Select"
     }

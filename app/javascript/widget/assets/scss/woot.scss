@@ -1,14 +1,10 @@
-@import 'shared/assets/stylesheets/animations';
-@import 'shared/assets/stylesheets/colors';
-
-// @import 'reset';
-@import 'widget/assets/scss/reset';
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+@import 'widget/assets/scss/reset';
 @import 'shared/assets/fonts/widget_fonts';
-// @import 'views/conversation';
-@import "widget/assets/scss/views/conversation";
+@import 'widget/assets/scss/views/conversation';
+
 
 html,
 body {

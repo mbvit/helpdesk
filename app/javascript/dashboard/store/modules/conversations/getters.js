@@ -161,6 +161,9 @@ const getters = {
   getCopilotAssistant: _state => {
     return _state.copilotAssistant;
   },
+
+  getMergeStatus: $state => $state.uiFlags.isMerging,
+
 };
 
 export default getters;

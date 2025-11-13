@@ -3,7 +3,7 @@
     "LIMIT_MESSAGES": {
       "CONVERSATION": "Você excedeu o limite de conversas. O plano Hacker permite apenas 500 conversas.",
       "INBOXES": "Você excedeu o limite da caixa de entrada. O plano Hacker só suporta chat ao vivo do site. Caixas adicionais como e-mail, WhatsApp etc. requerem um plano pago.",
-      "AGENTS": "Você excedeu o limite de agentes. O plano Hacker permite apenas 2 agentes.",
+      "AGENTS": "Você excedeu o limite do agente. Seu plano permite apenas {allowedAgents} agentes.",
       "NON_ADMIN": "Entre em contato com o administrador para atualizar o plano e continuar usando todos os recursos."
     },
     "TITLE": "Conta",
@@ -123,7 +123,7 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "Você pode receber e-mails em seu domínio personalizado agora."
       }
     },
-    "UPDATE_CHATWOOT": "Uma atualização {latestChatwootVersion} para o VegaVision está disponível. Por favor, atualize sua instância.",
+    "UPDATE_VegaVision": "Uma atualização {latestVegaVisionVersion} para o VegaVision está disponível. Por favor, atualize sua instância.",
     "LEARN_MORE": "Saiba mais",
     "PAYMENT_PENDING": "Seu pagamento está pendente. Por favor, atualize suas informações de pagamento para continuar usando o VegaVision",
     "UPGRADE": "Atualize para continuar usando o VegaVision",
@@ -134,6 +134,7 @@
     "MULTISELECT": {
       "ENTER_TO_SELECT": "Digite enter para selecionar",
       "ENTER_TO_REMOVE": "Digite enter para remover",
+      "NO_OPTIONS": "Lista vazia",
       "SELECT_ONE": "Selecione um",
       "SELECT": "Selecionar"
     }

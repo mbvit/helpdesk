@@ -3,7 +3,7 @@
     "LIMIT_MESSAGES": {
       "CONVERSATION": "You have exceeded the conversation limit. Hacker plan allows only 500 conversations.",
       "INBOXES": "You have exceeded the inbox limit. Hacker plan only supports website live-chat. Additional inboxes like email, WhatsApp etc. require a paid plan.",
-      "AGENTS": "You have exceeded the agent limit. Hacker plan allows only 2 agents.",
+      "AGENTS": "You have exceeded the agent limit. Your plan only allows {allowedAgents} agents.",
       "NON_ADMIN": "Please contact your administrator to upgrade the plan and continue using all features."
     },
     "TITLE": "Kontoinställningar",
@@ -123,7 +123,7 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "Du kan nu ta emot e-postmeddelanden i din egna domän."
       }
     },
-    "UPDATE_CHATWOOT": "En uppdatering {latestChatwootVersion} för VegaVision är tillgänglig. Vänligen uppdatera din instans.",
+    "UPDATE_VegaVision": "En uppdatering {latestVegaVisionVersion} för VegaVision är tillgänglig. Vänligen uppdatera din instans.",
     "LEARN_MORE": "Läs mer",
     "PAYMENT_PENDING": "Your payment is pending. Please update your payment information to continue using VegaVision",
     "UPGRADE": "Upgrade to continue using VegaVision",
@@ -134,6 +134,7 @@
     "MULTISELECT": {
       "ENTER_TO_SELECT": "Tryck Enter för att välja",
       "ENTER_TO_REMOVE": "Tryck Enter för att ta bort",
+      "NO_OPTIONS": "List is empty",
       "SELECT_ONE": "Markera en/ett",
       "SELECT": "Select"
     }

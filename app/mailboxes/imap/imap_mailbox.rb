@@ -42,7 +42,7 @@ class Imap::ImapMailbox
 
     message = @inbox.messages.find_by(source_id: in_reply_to)
     if message.nil?
-      @inbox.conversations.where("additional_attributes->>'in_reply_to' = ?", in_reply_to).first
+      @inbox.conversations.find_by("additional_attributes->>'in_reply_to' = ?", in_reply_to)
     else
       @inbox.conversations.find(message.conversation_id)
     end
@@ -74,9 +74,32 @@ class Imap::ImapMailbox
     message_to_return
   end
 
+  # def find_or_create_conversation
+  #   @conversation = find_conversation_by_in_reply_to || find_conversation_by_reference_ids || ::Conversation.create!(
+  #     {
+  #       account_id: @account.id,
+  #       inbox_id: @inbox.id,
+  #       contact_id: @contact.id,
+  #       contact_inbox_id: @contact_inbox.id,
+  #       additional_attributes: {
+  #         source: 'email',
+  #         in_reply_to: in_reply_to,
+  #         mail_subject: @processed_mail.subject,
+  #         initiated_at: {
+  #           timestamp: Time.now.utc
+  #         }
+  #       }
+  #     }
+  #   )
+  # end
+
   def find_or_create_conversation
-    @conversation = find_conversation_by_in_reply_to || find_conversation_by_reference_ids || ::Conversation.create!(
-      {
+    found_conversation =
+      find_conversation_by_in_reply_to || find_conversation_by_reference_ids
+    # Block if conversation is merged
+    if found_conversation&.merged_with_id.present?
+      # Option 1: Force a new conversation
+      return @conversation = ::Conversation.create!(
         account_id: @account.id,
         inbox_id: @inbox.id,
         contact_id: @contact.id,
@@ -84,11 +107,23 @@ class Imap::ImapMailbox
         additional_attributes: {
           source: 'email',
           in_reply_to: in_reply_to,
+          auto_reply: @processed_mail.auto_reply?,
           mail_subject: @processed_mail.subject,
-          initiated_at: {
-            timestamp: Time.now.utc
-          }
+          initiated_at: { timestamp: Time.now.utc }
         }
+      )
+    end
+  
+    @conversation = found_conversation || ::Conversation.create!(
+      account_id: @account.id,
+      inbox_id: @inbox.id,
+      contact_id: @contact.id,
+      contact_inbox_id: @contact_inbox.id,
+      additional_attributes: {
+        source: 'email',
+        in_reply_to: in_reply_to,
+        mail_subject: @processed_mail.subject,
+        initiated_at: { timestamp: Time.now.utc }
       }
     )
   end

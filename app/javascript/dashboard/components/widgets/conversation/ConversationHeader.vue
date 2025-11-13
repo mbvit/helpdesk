@@ -1,18 +1,20 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import { useElementSize } from '@vueuse/core';
 import BackButton from '../BackButton.vue';
 import InboxName from '../InboxName.vue';
 import MoreActions from './MoreActions.vue';
-import Thumbnail from '../Thumbnail.vue';
+import Avatar from 'next/avatar/Avatar.vue';
 import SLACardLabel from './components/SLACardLabel.vue';
 import wootConstants from 'dashboard/constants/globals';
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { snoozedReopenTime } from 'dashboard/helper/snoozeHelpers';
 import { useInbox } from 'dashboard/composables/useInbox';
 import { useI18n } from 'vue-i18n';
+import Button from 'dashboard/components-next/button/Button.vue';
+import EscalationPopoverCard from './EscalationPopoverCard.vue';
 
 const props = defineProps({
   chat: {
@@ -36,18 +38,24 @@ const currentChat = computed(() => store.getters.getSelectedChat);
 const accountId = computed(() => store.getters.getCurrentAccountId);
 
 const chatMetadata = computed(() => props.chat.meta);
-
+const isLoading = ref(false);
 const backButtonUrl = computed(() => {
   const {
-    params: { inbox_id: inboxId, label, teamId },
+    params: { inbox_id: inboxId, label, teamId, id: customViewId },
     name,
   } = route;
+
+  const conversationTypeMap = {
+    conversation_through_mentions: 'mention',
+    conversation_through_unattended: 'unattended',
+  };
   return conversationListPageURL({
-    accountId,
+    accountId: accountId.value,
     inboxId,
     label,
     teamId,
-    conversationType: name === 'conversation_mentions' ? 'mention' : '',
+    conversationType: conversationTypeMap[name],
+    customViewId,
   });
 });
 
@@ -84,6 +92,68 @@ const hasMultipleInboxes = computed(
 );
 
 const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
+const hasEscalation = computed(() => {
+  return props.chat?.escalation_status && props.chat?.escalation_status !== 'no_escalation' &&  props.chat?.escalation_status !== 'completed';
+});
+const escalationButtonLabel = computed(() => {
+  if (props.chat?.escalation_status === 'running') return t('Pause');
+  if (props.chat?.escalation_status === 'paused') return t('Resume');
+  return '';
+});
+
+const pauseOrResumeEscalation = async () => {
+  try {
+    const status = props.chat?.escalation_status;
+    console.log("status" , status)
+    let action = '';
+
+    if (status === 'running') action = 'pause';
+    else if (status === 'paused') action = 'resume';
+    else return;
+
+    console.log(`Attempting to ${action} escalation for conversation:`, currentChat.value?.id);
+    isLoading.value = true;
+    const data = await store.dispatch('PauseResumeEscalation', {
+      conversationId: currentChat.value?.id,
+      action,
+    });
+
+    console.log("Escalation API Response:", data);
+  } catch (error) {
+    console.error('Error pausing/resuming escalation:', error);
+  } finally {
+    isLoading.value = false; // Reset loading state
+  }
+};
+
+const escalationChain = computed(() => {
+  const escalations = props.chat?.escalations || [];
+
+  if (escalations.length === 0) return '';
+
+  // Sort by scheduled_at ascending (just in case)
+  const sorted = [...escalations].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+
+  const completed = sorted.filter(e => e.status === 'completed');
+  const active = sorted.find(e => e.status !== 'completed');
+
+  const lastCompleted = completed.at(-1); 
+  const result = [];
+
+  if (lastCompleted) result.push(lastCompleted.team_name);
+  if (active) result.push(active.team_name);
+
+  return result.join(' >> ');
+});
+// watch(
+//   () => hasEscalation.value,
+//   (newVal) => {
+//     if (newVal) {
+//       pauseOrResumeEscalation();
+//     }
+//   },
+//   { immediate: true } // Optional: calls on initial load too
+// );
 </script>
 
 <template>
@@ -99,12 +169,13 @@ const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
         :back-url="backButtonUrl"
         class="ltr:mr-2 rtl:ml-2"
       />
-      <Thumbnail
+      <Avatar
+        :name="currentContact.name"
         :src="currentContact.thumbnail"
-        :username="currentContact.name"
+        :size="32"
         :status="currentContact.availability_status"
-        size="32px"
-        class="flex-shrink-0"
+        hide-offline-status
+        rounded-full
       />
       <div
         class="flex flex-col items-start min-w-0 ml-2 overflow-hidden rtl:ml-0 rtl:mr-2"
@@ -123,6 +194,7 @@ const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
             icon="warning"
           />
         </div>
+
 
         <div
           class="flex items-center gap-2 overflow-hidden text-xs conversation--header--actions text-ellipsis whitespace-nowrap"
@@ -144,7 +216,30 @@ const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
         :parent-width="width"
         class="hidden md:flex"
       />
-      <MoreActions :conversation-id="currentChat.id" />
+      <div class="relative group">
+        <div
+          v-if="escalationChain"
+          class="flex items-center min-w-fit h-[26px] rounded-lg bg-n-alpha-1 text-xs font-medium px-2 text-n-slate-11"
+        >
+          {{ escalationChain }}
+        </div>
+
+    <div class="absolute top-7 left-0 hidden group-hover:flex">
+      <EscalationPopoverCard :escalations="props.chat.escalations" />
     </div>
+    </div>
+        <Button
+        v-if="hasEscalation"
+        :label="isLoading ? '' : escalationButtonLabel"
+        size="sm"
+        color="slate"
+        class="ltr:rounded-r-none rtl:rounded-l-none !outline-1 flex items-center justify-center"
+        @click="pauseOrResumeEscalation"
+      >
+        <span v-if="isLoading" class="spinner"></span> <!-- Show spinner -->
+        <span v-else>{{ escalationButtonLabel }}</span> <!-- Show label when not loading -->
+      </Button>
+          <MoreActions :conversation-id="currentChat.id" />
+      </div>
   </div>
 </template>

@@ -10,6 +10,7 @@ import { CONVERSATION_PRIORITY } from '../../../../shared/constants/messages';
 import { CONVERSATION_EVENTS } from '../../../helper/AnalyticsHelper/events';
 import { useTrack } from 'dashboard/composables';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import ConversationMergeModal from 'dashboard/modules/conversations/ConversationMergeModal.vue';
 
 export default {
   components: {
@@ -17,6 +18,7 @@ export default {
     MultiselectDropdown,
     ConversationLabels,
     NextButton,
+    ConversationMergeModal
   },
   props: {
     conversationId: {
@@ -59,6 +61,7 @@ export default {
           thumbnail: `/assets/images/dashboard/priority/${CONVERSATION_PRIORITY.LOW}.svg`,
         },
       ],
+      showMergeModal: false,
     };
   },
   computed: {
@@ -154,6 +157,21 @@ export default {
       }
       return false;
     },
+    isMergeable() {
+      return !this.currentChat?.snoozed_until && this.currentChat?.status !== 'resolved';
+    },
+    isConversationMerged() {
+      // Returns true if merged_with_id has a value, otherwise false.
+      return !!this.currentChat.merged_with_id;
+    },
+    mergeButtonTooltip() {
+      // Provides dynamic text for the tooltip.
+      if (this.isConversationMerged) {
+        return this.$t('CONVERSATION.HEADER.ALREADY_MERGED'); // "This conversation has been merged"
+      }
+      return this.$t('CONVERSATION.HEADER.MERGE'); // "Merge"
+    },
+
   },
   methods: {
     onSelfAssign() {
@@ -202,12 +220,21 @@ export default {
 
       this.assignedPriority = isSamePriority ? null : selectedPriorityItem;
     },
+    openMergeModal() {
+      this.showMergeModal = true;
+    },
+    closeMergeModal() {
+      this.showMergeModal = false; 
+    },
+    onConversationMerged() {
+      this.$emit('merge-success', this.primaryConversation.id);
+    }
   },
 };
 </script>
 
 <template>
-  <div class="bg-white dark:bg-slate-900">
+  <div class="bg-n-background">
     <div class="multiselect-wrap--small">
       <ContactDetailsItem
         compact
@@ -281,5 +308,26 @@ export default {
       :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_LABELS')"
     />
     <ConversationLabels :conversation-id="conversationId" />
+    <ContactDetailsItem
+      compact
+      :title="'Merge Conversation'"
+    />
+    <NextButton
+          v-tooltip.top-end="mergeButtonTooltip"
+          :disabled="isConversationMerged"
+          icon="i-ph-arrows-merge"
+          slate
+          faded
+          sm
+          @click="openMergeModal"
+      />
+
+    <ConversationMergeModal 
+      v-if="showMergeModal"
+      :show="showMergeModal"
+      :primary-conversation="currentChat"
+      @close="closeMergeModal"
+      @update:show="closeMergeModal"
+      @merge-success="onConversationMerged"  />
   </div>
 </template>

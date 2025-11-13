@@ -1,9 +1,13 @@
 class DashboardController < ActionController::Base
   include SwitchLocale
+  include Current
+  include Devise::Controllers::Helpers
 
   before_action :set_application_pack
   before_action :set_global_config
   before_action :set_dashboard_scripts
+  before_action :set_current_account
+  # before_action :set_account_name # Add this line
   around_action :switch_locale
   before_action :ensure_installation_onboarding, only: [:index]
   before_action :render_hc_if_custom_domain, only: [:index]
@@ -38,6 +42,19 @@ class DashboardController < ActionController::Base
       'DEPLOYMENT_ENV',
       'INSTALLATION_PRICING_PLAN'
     ).merge(app_config)
+
+    @global_config[:ACCOUNT_NAME] = @account_name
+  end
+
+  def set_current_account
+    return unless current_user
+  
+    ::Current.account = current_user.accounts.first
+    set_account_name
+  end
+
+  def set_account_name
+    @account_name = ::Current.account.name || 'Default Account Name'
   end
 
   def set_dashboard_scripts
@@ -66,7 +83,9 @@ class DashboardController < ActionController::Base
       ENABLE_ACCOUNT_SIGNUP: GlobalConfigService.load('ENABLE_ACCOUNT_SIGNUP', 'false'),
       FB_APP_ID: GlobalConfigService.load('FB_APP_ID', ''),
       INSTAGRAM_APP_ID: GlobalConfigService.load('INSTAGRAM_APP_ID', ''),
-      FACEBOOK_API_VERSION: GlobalConfigService.load('FACEBOOK_API_VERSION', 'v17.0'),
+      FACEBOOK_API_VERSION: GlobalConfigService.load('FACEBOOK_API_VERSION', 'v18.0'),
+      WHATSAPP_APP_ID: GlobalConfigService.load('WHATSAPP_APP_ID', ''),
+      WHATSAPP_CONFIGURATION_ID: GlobalConfigService.load('WHATSAPP_CONFIGURATION_ID', ''),
       IS_ENTERPRISE: ChatwootApp.enterprise?,
       AZURE_APP_ID: GlobalConfigService.load('AZURE_APP_ID', ''),
       GIT_SHA: GIT_HASH

@@ -3,7 +3,7 @@
     "LIMIT_MESSAGES": {
       "CONVERSATION": "您已经超过对话限制。黑客计划只允许500次对话。",
       "INBOXES": "您已超过收件箱限制。Hacker 计划只支持网站在线聊天。其他收件箱如电子邮件、WhatsApp 等需要付费计划。",
-      "AGENTS": "您已超过坐席限制。黑客计划只允许 2 个坐席。",
+      "AGENTS": "您已超过席位限制。当前计划只允许 {allowedAgents} 个席位。",
       "NON_ADMIN": "请联系您的管理员升级计划并继续使用所有功能。"
     },
     "TITLE": "帐户设置",
@@ -123,17 +123,18 @@
         "CUSTOM_EMAIL_DOMAIN_ENABLED": "您现在可以在您的自定义域名的电子邮件中接收消息。"
       }
     },
-    "UPDATE_CHATWOOT": "VegaVision 有可用更新{latestChatwootVersion}，请更新您的应用。",
+    "UPDATE_VegaVision": "VegaVision 有可用更新{latestVegaVisionVersion}，请更新您的应用。",
     "LEARN_MORE": "了解更多",
-    "PAYMENT_PENDING": "您的付款尚未完成。请更新您的付款信息以继续使用Chatwoot",
+    "PAYMENT_PENDING": "您的付款尚未完成。请更新您的付款信息以继续使用VegaVision",
     "UPGRADE": "升级以继续使用 VegaVision",
-    "LIMITS_UPGRADE": "您的账户已超过使用限制，请升级您的计划以继续使用Chatwoot",
+    "LIMITS_UPGRADE": "您的账户已超过使用限制，请升级您的计划以继续使用VegaVision",
     "OPEN_BILLING": "查看计费"
   },
   "FORMS": {
     "MULTISELECT": {
       "ENTER_TO_SELECT": "按回车键选择",
       "ENTER_TO_REMOVE": "按回车键删除",
+      "NO_OPTIONS": "列表为空",
       "SELECT_ONE": "请选择一个",
       "SELECT": "选择"
     }

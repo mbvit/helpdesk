@@ -3,7 +3,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   include DateRangeHelper
   include HmacConcern
 
-  before_action :conversation, except: [:index, :meta, :search, :create, :filter]
+  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :merge]
   before_action :inbox, :contact, :contact_inbox, only: [:create]
 
   ATTACHMENT_RESULTS_PER_PAGE = 100
@@ -130,6 +130,22 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
     head :ok
   end
 
+  def merge
+    primary_conversation = Current.account.conversations.find_by!(display_id: params[:primary_conversation_id])
+    merge_conversations = Current.account.conversations.where(display_id: params[:merge_ids])
+    merge_service = ::Conversations::ConversationMergeService.new(
+      account: Current.account,
+      primary_conversation_id: primary_conversation.id,
+      merge_ids: merge_conversations.pluck(:id)
+    )
+  
+    merged_conversation = merge_service.perform
+  
+    render json: { success: true, conversation: merged_conversation }
+  rescue StandardError => e
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
+  end
+
   private
 
   def permitted_update_params
@@ -160,7 +176,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
 
   def conversation
     @conversation ||= Current.account.conversations.find_by!(display_id: params[:id])
-    authorize @conversation.inbox, :show?
+    authorize @conversation, :show?
   end
 
   def inbox

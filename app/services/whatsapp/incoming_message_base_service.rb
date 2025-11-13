@@ -32,9 +32,11 @@ class Whatsapp::IncomingMessageBaseService
     set_contact
     return unless @contact
 
-    set_conversation
-    create_messages
-    clear_message_source_id_from_redis
+    ActiveRecord::Base.transaction do
+      set_conversation
+      create_messages
+      clear_message_source_id_from_redis
+    end
   end
 
   def process_statuses
@@ -92,18 +94,23 @@ class Whatsapp::IncomingMessageBaseService
 
     @contact_inbox = contact_inbox
     @contact = contact_inbox.contact
+
+    # Update existing contact name if ProfileName is available and current name is just phone number
+    update_contact_with_profile_name(contact_params)
   end
 
   def set_conversation
     # if lock to single conversation is disabled, we will create a new conversation if previous conversation is resolved
     @conversation = if @inbox.lock_to_single_conversation
-                      @contact_inbox.conversations.last
+                      @contact_inbox.conversations.where(merged_with_id: nil)
+                      .last
                     else
                       @contact_inbox.conversations
-                                    .where.not(status: :resolved).last
+                                    .where.not(status: :resolved)
+                                    .where(merged_with_id: nil)
+                                    .last
                     end
     return if @conversation
-
     @conversation = ::Conversation.create!(conversation_params)
   end
 
@@ -156,12 +163,36 @@ class Whatsapp::IncomingMessageBaseService
     phones = contact[:phones]
     phones = [{ phone: 'Phone number is not available' }] if phones.blank?
 
+    name_info = contact['name'] || {}
+    contact_meta = {
+      firstName: name_info['first_name'],
+      lastName: name_info['last_name']
+    }.compact
+
     phones.each do |phone|
       @message.attachments.new(
         account_id: @message.account_id,
         file_type: file_content_type(message_type),
-        fallback_title: phone[:phone].to_s
+        fallback_title: phone[:phone].to_s,
+        meta: contact_meta
       )
     end
+  end
+
+  def update_contact_with_profile_name(contact_params)
+    profile_name = contact_params.dig(:profile, :name)
+    return if profile_name.blank?
+    return if @contact.name == profile_name
+
+    # Only update if current name exactly matches the phone number or formatted phone number
+    return unless contact_name_matches_phone_number?
+
+    @contact.update!(name: profile_name)
+  end
+
+  def contact_name_matches_phone_number?
+    phone_number = "+#{@processed_params[:messages].first[:from]}"
+    formatted_phone_number = TelephoneNumber.parse(phone_number).international_number
+    @contact.name == phone_number || @contact.name == formatted_phone_number
   end
 end

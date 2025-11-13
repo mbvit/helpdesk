@@ -21,7 +21,6 @@ import ShopifyOrdersList from 'dashboard/components/widgets/conversation/Shopify
 import SidebarActionsHeader from 'dashboard/components-next/SidebarActionsHeader.vue';
 import LinearIssuesList from 'dashboard/components/widgets/conversation/linear/IssuesList.vue';
 import LinearSetupCTA from 'dashboard/components/widgets/conversation/linear/LinearSetupCTA.vue';
-import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 
 const props = defineProps({
   conversationId: {
@@ -44,12 +43,6 @@ const {
 const dragging = ref(false);
 const conversationSidebarItems = ref([]);
 
-const currentAccountId = useMapGetter('getCurrentAccountId');
-
-const isFeatureEnabledonAccount = useMapGetter(
-  'accounts/isFeatureEnabledonAccount'
-);
-
 const shopifyIntegration = useFunctionGetter(
   'integrations/getIntegration',
   'shopify'
@@ -66,11 +59,6 @@ const linearIntegration = useFunctionGetter(
 
 const isLinearIntegrationEnabled = computed(
   () => linearIntegration.value?.enabled || false
-);
-
-const isLinearFeatureEnabled = isFeatureEnabledonAccount.value(
-  currentAccountId.value,
-  FEATURE_FLAGS.LINEAR
 );
 
 const store = useStore();
@@ -94,7 +82,9 @@ const contact = computed(() => contactGetter.value(contactId.value));
 const contactAdditionalAttributes = computed(
   () => contact.value.additional_attributes || {}
 );
-
+const isConversationMerged = computed(
+  () => !!currentChat.value.merged_with_id
+);
 const getContactDetails = () => {
   if (contactId.value) {
     store.dispatch('contacts/show', { id: contactId.value });
@@ -137,7 +127,7 @@ onMounted(() => {
       @close="closeContactPanel"
     />
     <ContactInfo :contact="contact" :channel-type="channelType" />
-    <div class="pb-8 list-group px-2">
+    <div class="px-2 pb-8 list-group">
       <Draggable
         :list="conversationSidebarItems"
         animation="200"
@@ -154,6 +144,7 @@ onMounted(() => {
             class="conversation--actions"
           >
             <AccordionItem
+              v-if="!isConversationMerged"
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.CONVERSATION_ACTIONS')"
               :is-open="isContactSidebarItemOpen('is_conv_actions_open')"
               @toggle="
@@ -242,6 +233,7 @@ onMounted(() => {
             feature-key="macros"
           >
             <AccordionItem
+              v-if="!isConversationMerged"
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.MACROS')"
               :is-open="isContactSidebarItemOpen('is_macro_open')"
               compact
@@ -250,11 +242,7 @@ onMounted(() => {
               <MacrosList :conversation-id="conversationId" />
             </AccordionItem>
           </woot-feature-toggle>
-          <div
-            v-else-if="
-              element.name === 'linear_issues' && isLinearFeatureEnabled
-            "
-          >
+          <div v-else-if="element.name === 'linear_issues'">
             <AccordionItem
               :title="$t('CONVERSATION_SIDEBAR.ACCORDION.LINEAR_ISSUES')"
               :is-open="isContactSidebarItemOpen('is_linear_issues_open')"
@@ -304,7 +292,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 ::v-deep {
   .contact--profile {
-    @apply pb-3 border-b border-solid border-slate-75 dark:border-slate-700;
+    @apply pb-3 border-b border-solid border-n-weak;
   }
 
   .conversation--actions .multiselect-wrap--small {

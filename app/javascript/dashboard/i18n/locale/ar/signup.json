@@ -4,7 +4,7 @@
     "TITLE": "تسجيل",
     "TESTIMONIAL_HEADER": "إن كل ما يلزم هو خطوة واحدة للمضي قدما",
     "TESTIMONIAL_CONTENT": "You're one step away from engaging your customers, retaining them and finding new ones.",
-    "TERMS_ACCEPT": "من خلال التسجيل، فإنك توافق على <a href=\"https://www.chatwoot.com/terms\">شروط الخدمة</a> و <a href=\"https://www.chatwoot.com/privacy-policy\">سياسة الخصوصية</a>",
+    "TERMS_ACCEPT": "من خلال التسجيل، فإنك توافق على <a href=\"https://www.VegaVision.com/terms\">شروط الخدمة</a> و <a href=\"https://www.VegaVision.com/privacy-policy\">سياسة الخصوصية</a>",
     "OAUTH": {
       "GOOGLE_SIGNUP": "Sign up with Google"
     },
@@ -27,15 +27,20 @@
       "LABEL": "كلمة المرور",
       "PLACEHOLDER": "كلمة المرور",
       "ERROR": "كلمة المرور قصيرة جداً",
-      "IS_INVALID_PASSWORD": "يجب أن تحتوي كلمة المرور على الأقل على حرف كبير واحد وحرف صغير واحد ورقم واحد وحرف خاص واحد"
+      "IS_INVALID_PASSWORD": "يجب أن تحتوي كلمة المرور على الأقل على حرف كبير واحد وحرف صغير واحد ورقم واحد وحرف خاص واحد",
+      "REQUIREMENTS_LENGTH": "At least 6 characters long",
+      "REQUIREMENTS_UPPERCASE": "At least one uppercase letter",
+      "REQUIREMENTS_LOWERCASE": "At least one lowercase letter",
+      "REQUIREMENTS_NUMBER": "At least one number",
+      "REQUIREMENTS_SPECIAL": "At least one special character"
     },
     "CONFIRM_PASSWORD": {
       "LABEL": "تأكيد كلمة المرور",
       "PLACEHOLDER": "تأكيد كلمة المرور",
-      "ERROR": "كلمة المرور غير متطابقة"
+      "ERROR": "كلمة المرور غير متطابقة."
     },
     "API": {
-      "SUCCESS_MESSAGE": "تم التسجيل بنجاح",
+      "SUCCESS_MESSAGE": "Registration Successful",
       "ERROR_MESSAGE": "تعذر الاتصال بالخادم، الرجاء المحاولة مرة أخرى لاحقاً"
     },
     "SUBMIT": "إرسال",
