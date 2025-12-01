@@ -12,7 +12,6 @@ services:
         RAILS_ENV: 'production'
         RAILS_SERVE_STATIC_FILES: 'true'
     image: vv-helpdesk:latest
-    image: chatwoot/chatwoot:latest
     ## Change this file for customized env variables
     env_file: .env 
     volumes:
