@@ -498,6 +498,36 @@ const actions = {
   setContextMenuChatId({ commit }, chatId) {
     commit(types.SET_CONTEXT_MENU_CHAT_ID, chatId);
   },
+  PauseResumeEscalation: async ({ commit, state }, { action, conversationId }) => {
+    try {
+      let response;
+  
+      if (action === 'pause') {
+        response = await ConversationApi.pauseEscalation(conversationId);
+      } else {
+        response = await ConversationApi.resumeEscalation(conversationId);
+      }
+  
+      // ✅ If successful, flip the status locally
+      if (response?.status === 200) {
+        const allConversations = state.allConversations || [];
+        const conversation = allConversations.find(c => c.id === conversationId);
+  
+        if (conversation) {
+          const newStatus = action === 'pause' ? 'paused' : 'running';
+          conversation.escalation_status = newStatus;
+  
+          // Force reactivity
+          commit(types.UPDATE_CONVERSATION, { ...conversation });
+        }
+      }
+  
+      return response;
+    } catch (error) {
+      console.error("Error in PauseResumeEscalation:", error);
+    }
+  },
+  
 
   getInboxCaptainAssistantById: async ({ commit }, conversationId) => {
     try {
@@ -505,6 +535,23 @@ const actions = {
       commit(types.SET_INBOX_CAPTAIN_ASSISTANT, response.data);
     } catch (error) {
       // Handle error
+    }
+  },
+
+  mergeConversations: async ({ commit, dispatch }, { primaryConversationId, mergeIds }) => {
+    commit(types.SET_MERGE_CONVERSATION_STATUS, true);
+    try {
+      const response = await ConversationApi.merge(mergeIds, primaryConversationId);
+      
+      console.log(response.data)
+      
+      dispatch('conversationStats/get', {}, { root: true });
+      
+      return response.data;
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      commit(types.SET_MERGE_CONVERSATION_STATUS, false); 
     }
   },
 

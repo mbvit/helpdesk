@@ -57,6 +57,9 @@ export const actions = {
       commit(types.default.SET_ACCOUNT_UI_FLAG, {
         isFetchingItem: false,
       });
+      const newAccountName = response.data.name;
+      window.globalConfig.ACCOUNT_NAME = newAccountName;
+      document.title = `${window.globalConfig.INSTALLATION_NAME} - ${newAccountName}`;
     } catch (error) {
       commit(types.default.SET_ACCOUNT_UI_FLAG, {
         isFetchingItem: false,

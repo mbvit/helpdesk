@@ -286,6 +286,7 @@ export default {
               :show-action-input="
                 showActionInput(automationActionTypes, action.action_name)
               "
+              :selected-response="selectedResponse.actions[i]"
               :error-message="
                 errors[`action_${i}`]
                   ? $t(`AUTOMATION.ERRORS.${errors[`action_${i}`]}`)

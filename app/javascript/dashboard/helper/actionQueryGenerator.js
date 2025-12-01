@@ -18,9 +18,15 @@ const formatArray = params => {
 };
 
 const generatePayloadForObject = item => {
-  if (item.action_params.id) {
+  if (item.action_name === 'ticket_escalation') {
+    item.action_params = [ 
+      item.action_params.id,
+      item.action_params.thresholdTime,
+      item.action_params.thresholdUnit
+    ]
+  } else if (item.action_params.id) {
     item.action_params = [item.action_params.id];
-  } else {
+  }  else {
     item.action_params = [item.action_params];
   }
   return item.action_params;
@@ -30,7 +36,15 @@ const generatePayload = data => {
   const actions = JSON.parse(JSON.stringify(data));
   let payload = actions.map(item => {
     if (Array.isArray(item.action_params)) {
-      item.action_params = formatArray(item.action_params);
+      if(item.action_name === 'ticket_escalation') {
+        item.action_params = [
+          item.action_params[0].id,
+          item.action_params[0].thresholdTime,
+          item.action_params[0].thresholdUnit
+        ];
+      }else{
+        item.action_params = formatArray(item.action_params);
+        } 
     } else if (typeof item.action_params === 'object') {
       item.action_params = generatePayloadForObject(item);
     } else if (!item.action_params) {
