@@ -18,6 +18,38 @@ services:
     volumes:
       - storage_data:/app/storage
 
+  db-init:
+    <<: *base
+    container_name: db-init
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=chatwoot
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+    command: |
+      sh -c "
+        echo 'Waiting for PostgreSQL to be ready...' &&
+        until pg_isready -h Postgres -p 5432 -U postgres; do
+          echo 'PostgreSQL is unavailable - sleeping'
+          sleep 2
+        done &&
+        echo 'PostgreSQL is ready!' &&
+        echo 'Running Chatwoot database preparation...' &&
+        bundle exec rails db:chatwoot_prepare &&
+        echo 'Running database migrations...' &&
+        bundle exec rails db:migrate &&
+        echo 'Database initialization completed successfully!' &&
+        touch /app/storage/.db-initialized
+      "
+    restart: "no"  # Important: only run once, don't restart
+
   rails:
     <<: *base
     image: vv-helpdesk:latest
