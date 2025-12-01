@@ -3,7 +3,6 @@ version: '3'
 
 services:
   base: &base
-<<<<<<<< HEAD:docker-compose.chatwoot-original.yml
     build:
       context: .
       dockerfile: ./docker/Dockerfile
@@ -12,20 +11,16 @@ services:
         EXECJS_RUNTIME: Disabled
         RAILS_ENV: 'production'
         RAILS_SERVE_STATIC_FILES: 'true'
-    image: vegavision:latest
-========
+    image: vv-helpdesk:latest
     image: chatwoot/chatwoot:latest
->>>>>>>> pr-14:docker-compose.official.production.yaml
-    env_file: .env ## Change this file for customized env variables
+    ## Change this file for customized env variables
+    env_file: .env 
     volumes:
       - storage_data:/app/storage
 
   rails:
     <<: *base
-<<<<<<<< HEAD:docker-compose.chatwoot-original.yml
-    image: vegavision:latest
-========
->>>>>>>> pr-14:docker-compose.official.production.yaml
+    image: vv-helpdesk:latest
     depends_on:
       - postgres
       - redis
@@ -41,10 +36,7 @@ services:
 
   sidekiq:
     <<: *base
-<<<<<<<< HEAD:docker-compose.chatwoot-original.yml
-    image: vegavision:latest
-========
->>>>>>>> pr-14:docker-compose.official.production.yaml
+    image: vv-helpdesk:latest
     depends_on:
       - postgres
       - redis
@@ -65,12 +57,7 @@ services:
     environment:
       - POSTGRES_DB=chatwoot
       - POSTGRES_USER=postgres
-<<<<<<<< HEAD:docker-compose.chatwoot-original.yml
-      - POSTGRES_PASSWORD=Password123$
-========
-      # Please provide your own password.
-      - POSTGRES_PASSWORD=
->>>>>>>> pr-14:docker-compose.official.production.yaml
+      - POSTGRES_PASSWORD=password123
 
   redis:
     image: redis:alpine
